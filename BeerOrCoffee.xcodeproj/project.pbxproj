@@ -17,6 +17,8 @@
 		10AF4CE91F17702C00F4A109 /* DetailsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 10AF4CE81F17702C00F4A109 /* DetailsViewController.swift */; };
 		10AF4CEB1F17710C00F4A109 /* MapViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 10AF4CEA1F17710C00F4A109 /* MapViewController.swift */; };
 		10AF4CED1F17717100F4A109 /* Api.swift in Sources */ = {isa = PBXBuildFile; fileRef = 10AF4CEC1F17717100F4A109 /* Api.swift */; };
+		10AF4D291F178D1F00F4A109 /* PlacesData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 10AF4D281F178D1F00F4A109 /* PlacesData.swift */; };
+		10AF4D2B1F17B5C900F4A109 /* FavoritsTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 10AF4D2A1F17B5C900F4A109 /* FavoritsTableViewController.swift */; };
 		A781C036F5815364A02CC78D /* Pods_BeerOrCoffee.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 193195EC187BC494343DB6EB /* Pods_BeerOrCoffee.framework */; };
 /* End PBXBuildFile section */
 
@@ -54,6 +56,8 @@
 		10AF4CE81F17702C00F4A109 /* DetailsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DetailsViewController.swift; sourceTree = "<group>"; };
 		10AF4CEA1F17710C00F4A109 /* MapViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MapViewController.swift; sourceTree = "<group>"; };
 		10AF4CEC1F17717100F4A109 /* Api.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Api.swift; sourceTree = "<group>"; };
+		10AF4D281F178D1F00F4A109 /* PlacesData.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PlacesData.swift; sourceTree = "<group>"; };
+		10AF4D2A1F17B5C900F4A109 /* FavoritsTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FavoritsTableViewController.swift; sourceTree = "<group>"; };
 		193195EC187BC494343DB6EB /* Pods_BeerOrCoffee.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_BeerOrCoffee.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		2DA184DBF22EAC67363ADACB /* Pods-BeerOrCoffee.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BeerOrCoffee.debug.xcconfig"; path = "Pods/Target Support Files/Pods-BeerOrCoffee/Pods-BeerOrCoffee.debug.xcconfig"; sourceTree = "<group>"; };
 		BD3AB299C0D2352AC7A5BB42 /* Pods-BeerOrCoffee.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BeerOrCoffee.release.xcconfig"; path = "Pods/Target Support Files/Pods-BeerOrCoffee/Pods-BeerOrCoffee.release.xcconfig"; sourceTree = "<group>"; };
@@ -113,9 +117,11 @@
 				10AF4CBA1F176BEA00F4A109 /* AppDelegate.swift */,
 				10AF4CE81F17702C00F4A109 /* DetailsViewController.swift */,
 				10AF4CBC1F176BEA00F4A109 /* TableViewController.swift */,
+				10AF4D2A1F17B5C900F4A109 /* FavoritsTableViewController.swift */,
 				10AF4CBE1F176BEA00F4A109 /* Main.storyboard */,
 				10AF4CEC1F17717100F4A109 /* Api.swift */,
 				10AF4CEA1F17710C00F4A109 /* MapViewController.swift */,
+				10AF4D281F178D1F00F4A109 /* PlacesData.swift */,
 				10AF4CC11F176BEA00F4A109 /* Assets.xcassets */,
 				10AF4CC31F176BEA00F4A109 /* LaunchScreen.storyboard */,
 				10AF4CC61F176BEA00F4A109 /* Info.plist */,
@@ -346,9 +352,11 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				10AF4D2B1F17B5C900F4A109 /* FavoritsTableViewController.swift in Sources */,
 				10AF4CBD1F176BEA00F4A109 /* TableViewController.swift in Sources */,
 				10AF4CBB1F176BEA00F4A109 /* AppDelegate.swift in Sources */,
 				10AF4CE91F17702C00F4A109 /* DetailsViewController.swift in Sources */,
+				10AF4D291F178D1F00F4A109 /* PlacesData.swift in Sources */,
 				10AF4CED1F17717100F4A109 /* Api.swift in Sources */,
 				10AF4CEB1F17710C00F4A109 /* MapViewController.swift in Sources */,
 			);

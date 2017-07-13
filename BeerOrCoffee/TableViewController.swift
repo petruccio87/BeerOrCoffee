@@ -12,18 +12,24 @@ import Alamofire
 import RealmSwift
 import SwiftyJSON
 
-var cityList = [(name: "None", rating: "None", priceLevel: "None", latLng: "None", address: "None")]
+
 
 class TableViewController: UITableViewController {
     
-    // let api : Api = Api()
+    let api : Api = Api()
+    var cityList = [(name: "None", rating: "None", priceLevel: "None", latLng: "None", address: "None", favorit: false, place_id: "None")]
     
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
         
-        //print(api.findPlaces())
-        findPlaces()
+        print(Realm.Configuration.defaultConfiguration.fileURL)
+        
+ // ищем каждый раз
+        print(api.findPlaces())
+ // загружаем все данные из базы
+        cityList = api.loadPlacesListDB()
+        
         
     }
     
@@ -48,11 +54,12 @@ class TableViewController: UITableViewController {
                 destinationVC.priceLevel = cityList[indexPath.row].priceLevel
                 destinationVC.latLng = cityList[indexPath.row].latLng
                 destinationVC.address = cityList[indexPath.row].address
+                destinationVC.place_id = cityList[indexPath.row].place_id
             }
             
         }
     }
-    
+/*
     func findPlaces() {
         let apikey = "AIzaSyBzfEMMl1BGXGoLngcVuEdu2HvOGTMVT48"
         let latlng = "55.761704,37.620350"
@@ -87,7 +94,7 @@ class TableViewController: UITableViewController {
             }
         }
     }
-    
+*/    
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.

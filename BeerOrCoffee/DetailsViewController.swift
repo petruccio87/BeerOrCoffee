@@ -8,14 +8,19 @@
 
 
 import UIKit
+import RealmSwift
 
 class DetailsViewController: UIViewController {
+    
+    
     
     var name : String = ""
     var rating : String = ""
     var priceLevel : String = ""
     var latLng : String = ""
     var address : String = ""
+    var favorite : Bool = false
+    var place_id : String = ""
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -38,6 +43,24 @@ class DetailsViewController: UIViewController {
         // Dispose of any resources that can be recreated.
     }
     
+    @IBAction func favorit(_ sender: UIButton) {
+        let realm = try! Realm()
+        let data = realm.objects(PlacesData.self).filter("place_id BEGINSWITH %@", place_id)
+        let newdata = PlacesData()
+        newdata.place_name = data[0].place_name
+        newdata.place_id = data[0].place_id
+        newdata.place_icon = data[0].place_icon
+        newdata.raiting = data[0].raiting
+        newdata.price_level = data[0].price_level
+        newdata.latLng = data[0].latLng
+        newdata.address = data[0].address
+        newdata.favorit = !data[0].favorit
+        try! realm.write {
+            realm.add(newdata, update: true)
+        }
+    }
+    
+
     
     /*
      // MARK: - Navigation
