@@ -125,6 +125,25 @@ class Api {             // пока не используется, функци�
         }
         return classPlace
     }
+    
+// удаляет заведение из базы любимых
+    func removePlaceFromDB(place_id: String) {
+        let realm = try! Realm()
+        let data = realm.objects(FavoritsData.self).filter("place_id BEGINSWITH %@", place_id)
+        try! realm.write {
+            realm.delete(data)
+        }
+        
+    }
+    
+    func isFavorit(place_id: String) -> Bool{
+        let realm = try! Realm()
+        if realm.objects(FavoritsData.self).filter("place_id BEGINSWITH %@", place_id).count > 0 {
+            return true
+        } else {
+            return false
+        }
+    }
 }
 
 

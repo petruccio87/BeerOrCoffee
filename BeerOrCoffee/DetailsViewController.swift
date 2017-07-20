@@ -17,6 +17,7 @@ class DetailsViewController: UIViewController {
     
     
     var place = Place()
+    let api : Api = Api()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -26,52 +27,54 @@ class DetailsViewController: UIViewController {
         let priceLevelLabel : UILabel = self.view.viewWithTag(3) as! UILabel
         let latLngLabel : UILabel = self.view.viewWithTag(4) as! UILabel
         let addressLabel : UILabel = self.view.viewWithTag(5) as! UILabel
+        let favButton : UIButton = self.view.viewWithTag(6) as! UIButton
         // Do any additional setup after loading the view.
         nameLabel.text = place.name
         ratingLabel.text = place.rating
         priceLevelLabel.text = place.priceLevel
         latLngLabel.text = place.latLng
         addressLabel.text = place.address
+        if api.isFavorit(place_id: place.place_id) {
+            let favImage = UIImage(named: "star_true.png")
+            favButton.setImage(favImage, for: .normal)
+        } else {
+            let favImage = UIImage(named: "star_false.png")
+            favButton.setImage(favImage, for: .normal)
+        }
     }
     
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
-    
+
+// кнопка favorit- добавляет в базу любимых, если места там нет, и удаляет из базы любимых, если оно там есть.
     @IBAction func favorit(_ sender: UIButton) {
         let realm = try! Realm()
-  // не хорошо конечно дублировать код, но не получается один раз определить data т.к. она то favoritsData то placesData, а преобразовывать их друг в друга не получается
+        
         if realm.objects(FavoritsData.self).filter("place_id BEGINSWITH %@", place.place_id).count > 0 {
-             let data = realm.objects(FavoritsData.self).filter("place_id BEGINSWITH %@", place.place_id)
-            let newdata = FavoritsData()
-            newdata.place_name = data[0].place_name
-            newdata.place_id = data[0].place_id
-            newdata.place_icon = data[0].place_icon
-            newdata.raiting = data[0].raiting
-            newdata.price_level = data[0].price_level
-            newdata.latLng = data[0].latLng
-            newdata.address = data[0].address
-            newdata.favorit = !data[0].favorit
-            try! realm.write {
-                realm.add(newdata, update: true)
+            let data = realm.objects(FavoritsData.self).filter("place_id BEGINSWITH %@", place.place_id)
+            if data[0].favorit {                   // если есть в favorits то удаляем из базы
+                api.removePlaceFromDB(place_id: place.place_id)
+                place.favorite = false           // для изменения картинки звезды
+                viewDidLoad()
             }
         } else {
-             let data = realm.objects(PlacesData.self).filter("place_id BEGINSWITH %@", place.place_id)
-            let newdata = FavoritsData()
-            newdata.place_name = data[0].place_name
-            newdata.place_id = data[0].place_id
-            newdata.place_icon = data[0].place_icon
-            newdata.raiting = data[0].raiting
-            newdata.price_level = data[0].price_level
-            newdata.latLng = data[0].latLng
-            newdata.address = data[0].address
-            newdata.favorit = !data[0].favorit
+            let newdata = FavoritsData()        // если нет в favorits то добавляем в базу
+            newdata.place_name = place.name
+            newdata.place_id = place.place_id
+            newdata.place_icon = place.icon
+            newdata.raiting = place.rating
+            newdata.price_level = place.priceLevel
+            newdata.latLng = place.latLng
+            newdata.address = place.address
+            newdata.favorit = true
             try! realm.write {
                 realm.add(newdata, update: true)
             }
-            
-        }
+            place.favorite = true           // для изменения картинки звезды
+            viewDidLoad()
+    }
         
         
         let alert = UIAlertController(title: "Alert", message: "test Alert", preferredStyle: .actionSheet)
