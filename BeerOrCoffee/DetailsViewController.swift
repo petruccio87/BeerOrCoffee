@@ -9,18 +9,14 @@
 
 import UIKit
 import RealmSwift
+import GoogleMaps
 
 class DetailsViewController: UIViewController {
     
+    @IBOutlet weak var mapView: GMSMapView!
     
     
-    var name : String = ""
-    var rating : String = ""
-    var priceLevel : String = ""
-    var latLng : String = ""
-    var address : String = ""
-    var favorite : Bool = false
-    var place_id : String = ""
+    var place = Place()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -31,11 +27,11 @@ class DetailsViewController: UIViewController {
         let latLngLabel : UILabel = self.view.viewWithTag(4) as! UILabel
         let addressLabel : UILabel = self.view.viewWithTag(5) as! UILabel
         // Do any additional setup after loading the view.
-        nameLabel.text = name
-        ratingLabel.text = rating
-        priceLevelLabel.text = priceLevel
-        latLngLabel.text = latLng
-        addressLabel.text = address
+        nameLabel.text = place.name
+        ratingLabel.text = place.rating
+        priceLevelLabel.text = place.priceLevel
+        latLngLabel.text = place.latLng
+        addressLabel.text = place.address
     }
     
     override func didReceiveMemoryWarning() {
@@ -45,19 +41,43 @@ class DetailsViewController: UIViewController {
     
     @IBAction func favorit(_ sender: UIButton) {
         let realm = try! Realm()
-        let data = realm.objects(PlacesData.self).filter("place_id BEGINSWITH %@", place_id)
-        let newdata = PlacesData()
-        newdata.place_name = data[0].place_name
-        newdata.place_id = data[0].place_id
-        newdata.place_icon = data[0].place_icon
-        newdata.raiting = data[0].raiting
-        newdata.price_level = data[0].price_level
-        newdata.latLng = data[0].latLng
-        newdata.address = data[0].address
-        newdata.favorit = !data[0].favorit
-        try! realm.write {
-            realm.add(newdata, update: true)
+  // не хорошо конечно дублировать код, но не получается один раз определить data т.к. она то favoritsData то placesData, а преобразовывать их друг в друга не получается
+        if realm.objects(FavoritsData.self).filter("place_id BEGINSWITH %@", place.place_id).count > 0 {
+             let data = realm.objects(FavoritsData.self).filter("place_id BEGINSWITH %@", place.place_id)
+            let newdata = FavoritsData()
+            newdata.place_name = data[0].place_name
+            newdata.place_id = data[0].place_id
+            newdata.place_icon = data[0].place_icon
+            newdata.raiting = data[0].raiting
+            newdata.price_level = data[0].price_level
+            newdata.latLng = data[0].latLng
+            newdata.address = data[0].address
+            newdata.favorit = !data[0].favorit
+            try! realm.write {
+                realm.add(newdata, update: true)
+            }
+        } else {
+             let data = realm.objects(PlacesData.self).filter("place_id BEGINSWITH %@", place.place_id)
+            let newdata = FavoritsData()
+            newdata.place_name = data[0].place_name
+            newdata.place_id = data[0].place_id
+            newdata.place_icon = data[0].place_icon
+            newdata.raiting = data[0].raiting
+            newdata.price_level = data[0].price_level
+            newdata.latLng = data[0].latLng
+            newdata.address = data[0].address
+            newdata.favorit = !data[0].favorit
+            try! realm.write {
+                realm.add(newdata, update: true)
+            }
+            
         }
+        
+        
+        let alert = UIAlertController(title: "Alert", message: "test Alert", preferredStyle: .actionSheet)
+        let actionOK = UIAlertAction(title: "Ok", style: .default, handler: nil)
+        alert.addAction(actionOK)
+        self.present(alert, animated: true, completion: nil)
     }
     
 

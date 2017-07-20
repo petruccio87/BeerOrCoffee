@@ -23,3 +23,18 @@ class PlacesData: Object {
         return "place_id"
     }
 }
+
+class FavoritsData: Object {
+    dynamic var place_name: String = ""
+    dynamic var place_id: String = ""
+    dynamic var place_icon: String = ""
+    dynamic var raiting: String = ""
+    dynamic var price_level: String = ""
+    dynamic var latLng: String = ""
+    dynamic var address: String = ""
+    dynamic var favorit: Bool = true
+    
+    override static func primaryKey() -> String? {
+        return "place_id"
+    }
+}

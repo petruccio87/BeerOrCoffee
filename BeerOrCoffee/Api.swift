@@ -14,15 +14,22 @@ import SwiftyJSON
 
 class Api {             // пока не используется, функция поиска в классе TableViewController
     
-    func findPlaces() {
+    func findPlaces(type: String) {
         
         let realm = try! Realm()
         
-        let apikey = "AIzaSyBzfEMMl1BGXGoLngcVuEdu2HvOGTMVT48"
+        
         let latlng = "55.761704,37.620350"
         let radius = "150"
         let rankby = "distance"
-        let placeType = "bar"
+        var placeType = ""
+        if type == "Bar" {
+             placeType = "bar"
+        } else if type == "Cafe" {
+             placeType = "cafe"
+        } else {
+             placeType = "bar"
+        }
         let language = "ru"
         
         let urlByRadius = "https://maps.googleapis.com/maps/api/place/nearbysearch/json?location="+latlng+"&radius="+radius+"&opennow=true&type="+placeType+"&language="+language+"&key=" + apikey
@@ -33,13 +40,16 @@ class Api {             // пока не используется, функци�
             case .success(let value):
                 let json = JSON(value)
                 if json["status"].stringValue == "OK" {
-  //                  cityList.remove(at: 0)
+                    
+                    let removeData = realm.objects(PlacesData.self)     // очищаем результаты поиска перед запоминанием новых результатов поиска
+                    try! realm.write {
+                        realm.delete(removeData)
+                    }
                     
                     for (key,place):(String, JSON) in json["results"] {
                         let placeData = PlacesData()
                         
                         print(key, " ", place["name"].stringValue)
-  //                      cityList.append((name: place["name"].stringValue, rating: place["rating"].stringValue, priceLevel: place["price_level"].stringValue, latLng: place["geometry"]["location"]["lat"].stringValue+","+place["geometry"]["location"]["lng"].stringValue, address: place["vicinity"].stringValue))
                         print("     Rating: ", place["rating"].stringValue)
                         print("     Price Level: ", place["price_level"].stringValue)   // не везде есть
                         print("     LatLng: ", place["geometry"]["location"]["lat"].stringValue, ",", place["geometry"] ["location"]["lng"].stringValue)
@@ -75,29 +85,45 @@ class Api {             // пока не используется, функци�
     
 
 // возвращает ВСЕ данные из базы
-    func loadPlacesListDB() -> [(name: String, rating: String, priceLevel: String, latLng: String, address: String, favorit: Bool, place_id: String)]  {
+    func loadClassPlacesListDB() -> [Place]  {
+        
         let realm = try! Realm()
-        var cityList: [(name: String, rating: String, priceLevel: String, latLng:  String, address: String, favorit: Bool, place_id: String)] = []
+        var classPlace : [Place] = []
         let data = realm.objects(PlacesData.self)
-        
         for value in data {
-            cityList.append((name: value.place_name, rating: value.raiting, priceLevel: value.price_level, latLng: value.latLng, address: value.address, favorit: value.favorit, place_id: value.place_id ))
+            let tmpPlace = Place()
+            tmpPlace.name = value.place_name
+            tmpPlace.place_id = value.place_id
+            tmpPlace.priceLevel = value.price_level
+            tmpPlace.rating = value.raiting
+            tmpPlace.latLng = value.latLng
+            tmpPlace.address = value.address
+            tmpPlace.favorite = value.favorit
+            tmpPlace.icon = value.place_icon
+            classPlace.append(tmpPlace)
         }
-        
-        return cityList
+        return classPlace
     }
     
 // возвращает данные об Любимых метсах (favorits)
-    func loadFavPlacesListDB() -> [(name: String, rating: String, priceLevel: String, latLng: String, address: String, favorit: Bool, place_id: String)]  {
+    func loadClassFavPlacesListDB() -> [Place]  {
+        
         let realm = try! Realm()
-        var cityList: [(name: String, rating: String, priceLevel: String, latLng:  String, address: String, favorit: Bool, place_id: String)] = []
-        let data = realm.objects(PlacesData.self).filter("favorit == true")
-        
+        var classPlace : [Place] = []
+        let data = realm.objects(FavoritsData.self).filter("favorit == true")
         for value in data {
-            cityList.append((name: value.place_name, rating: value.raiting, priceLevel: value.price_level, latLng: value.latLng, address: value.address, favorit: value.favorit, place_id: value.place_id ))
+            let tmpPlace = Place()
+            tmpPlace.name = value.place_name
+            tmpPlace.place_id = value.place_id
+            tmpPlace.priceLevel = value.price_level
+            tmpPlace.rating = value.raiting
+            tmpPlace.latLng = value.latLng
+            tmpPlace.address = value.address
+            tmpPlace.favorite = value.favorit
+            tmpPlace.icon = value.place_icon
+            classPlace.append(tmpPlace)
         }
-        
-        return cityList
+        return classPlace
     }
 }
 

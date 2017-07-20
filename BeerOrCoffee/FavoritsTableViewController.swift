@@ -18,19 +18,26 @@ import SwiftyJSON
 class FavoritsTableViewController: UITableViewController {
     
     let api : Api = Api()
-    var cityList = [(name: "None", rating: "None", priceLevel: "None", latLng: "None", address: "None", favorit: false, place_id: "None")]
+    let realm = try! Realm()
+    var notificationToken: NotificationToken? = nil
+    
+    var classPlace : [Place] = []
     
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
         
-        print(Realm.Configuration.defaultConfiguration.fileURL)
-        //print(api.findPlaces())
+        print(Realm.Configuration.defaultConfiguration.fileURL as Any)
         
         if load == nil {
-            api.findPlaces()
+//     api.findPlaces()      //если еще не запускались, то и любимых мест нет
         } else {
-            cityList = api.loadFavPlacesListDB()
+            classPlace = api.loadClassFavPlacesListDB()
+        }
+        
+        notificationToken = realm.addNotificationBlock {notification, realm in
+            self.classPlace = self.api.loadClassFavPlacesListDB()
+            self.tableView.reloadData()
         }
         
     }
@@ -38,12 +45,27 @@ class FavoritsTableViewController: UITableViewController {
     override func numberOfSections(in tableView: UITableView) -> Int {
         return 1
     }
+    
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return cityList.count
+        if classPlace.count == 0 {      // заглушка - тут надо как-то показывать сообщение вместо пустой таблицы
+            let tmpPlace = Place()
+            tmpPlace.name = "So far there is Nothing"
+            tmpPlace.place_id = ""
+            tmpPlace.priceLevel = ""
+            tmpPlace.rating = ""
+            tmpPlace.latLng = ""
+            tmpPlace.address = ""
+            tmpPlace.favorite = false
+            tmpPlace.icon = ""
+            classPlace.append(tmpPlace)
+            return 1
+        }
+        return classPlace.count
     }
+    
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath)
-        cell.textLabel?.text = cityList[indexPath.row].name
+        cell.textLabel?.text = classPlace[indexPath.row].name
         return cell
     }
     
@@ -51,12 +73,7 @@ class FavoritsTableViewController: UITableViewController {
         if segue.identifier == "details" {
             if let indexPath = tableView.indexPathForSelectedRow {
                 let destinationVC = segue.destination as! DetailsViewController
-                destinationVC.name = cityList[indexPath.row].name
-                destinationVC.rating = cityList[indexPath.row].rating
-                destinationVC.priceLevel = cityList[indexPath.row].priceLevel
-                destinationVC.latLng = cityList[indexPath.row].latLng
-                destinationVC.address = cityList[indexPath.row].address
-                destinationVC.place_id = cityList[indexPath.row].place_id
+                destinationVC.place = classPlace[indexPath.row]
             }
             
         }
@@ -67,6 +84,9 @@ class FavoritsTableViewController: UITableViewController {
         // Dispose of any resources that can be recreated.
     }
     
+    deinit {
+        notificationToken?.stop()
+    }
     
 }
 

@@ -17,31 +17,39 @@ import SwiftyJSON
 class TableViewController: UITableViewController {
     
     let api : Api = Api()
-    var cityList = [(name: "None", rating: "None", priceLevel: "None", latLng: "None", address: "None", favorit: false, place_id: "None")]
+    let realm = try! Realm()
+    var notificationToken: NotificationToken? = nil
+    var searchType = "Bar"  // меняется через seque
+    var classPlace : [Place] = []
     
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
         
-        print(Realm.Configuration.defaultConfiguration.fileURL)
+        print(Realm.Configuration.defaultConfiguration.fileURL as Any)
         
  // ищем каждый раз
-        print(api.findPlaces())
+        print(api.findPlaces(type: searchType))
+        
  // загружаем все данные из базы
-        cityList = api.loadPlacesListDB()
-        
-        
+        notificationToken = realm.addNotificationBlock {notification, realm in
+            self.classPlace = self.api.loadClassPlacesListDB()
+            self.tableView.reloadData()
+        }
+    
     }
     
     override func numberOfSections(in tableView: UITableView) -> Int {
         return 1
     }
+    
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return cityList.count
+        return classPlace.count
     }
+    
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath)
-        cell.textLabel?.text = cityList[indexPath.row].name
+        cell.textLabel?.text = classPlace[indexPath.row].name
         return cell
     }
     
@@ -49,16 +57,14 @@ class TableViewController: UITableViewController {
         if segue.identifier == "details" {
             if let indexPath = tableView.indexPathForSelectedRow {
                 let destinationVC = segue.destination as! DetailsViewController
-                destinationVC.name = cityList[indexPath.row].name
-                destinationVC.rating = cityList[indexPath.row].rating
-                destinationVC.priceLevel = cityList[indexPath.row].priceLevel
-                destinationVC.latLng = cityList[indexPath.row].latLng
-                destinationVC.address = cityList[indexPath.row].address
-                destinationVC.place_id = cityList[indexPath.row].place_id
+                destinationVC.place = classPlace[indexPath.row]
             }
             
         }
     }
+    
+    
+    
 /*
     func findPlaces() {
         let apikey = "AIzaSyBzfEMMl1BGXGoLngcVuEdu2HvOGTMVT48"
@@ -94,12 +100,18 @@ class TableViewController: UITableViewController {
             }
         }
     }
-*/    
+*/
+    
+    
+    
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
     
+    deinit {
+        notificationToken?.stop()
+    }
     
 }
 
