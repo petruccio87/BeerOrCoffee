@@ -14,12 +14,13 @@ import SwiftyJSON
 
 class Api {             // пока не используется, функция поиска в классе TableViewController
     
-    func findPlaces(type: String) {
+    func findPlaces(type: String, lat: Double, lng: Double) {
         
         let realm = try! Realm()
         
         
-        let latlng = "55.761704,37.620350"
+        //let latlng = "55.761704,37.620350"
+        let latlng = String(lat) + "," + String(lng)
         let radius = "150"
         let rankby = "distance"
         var placeType = ""

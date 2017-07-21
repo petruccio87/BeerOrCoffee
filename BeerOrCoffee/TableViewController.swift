@@ -20,16 +20,24 @@ class TableViewController: UITableViewController {
     let realm = try! Realm()
     var notificationToken: NotificationToken? = nil
     var searchType = "Bar"  // меняется через seque
+    var lat: Double = 0
+    var lng: Double = 0
     var classPlace : [Place] = []
     
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
+        let backgroundImage = UIImage(named: "bg.png")
+        let imageView = UIImageView(image: backgroundImage)
+        imageView.contentMode = .scaleAspectFill
+        self.tableView.backgroundView = imageView
+        
+        
         
         print(Realm.Configuration.defaultConfiguration.fileURL as Any)
         
  // ищем каждый раз
-        print(api.findPlaces(type: searchType))
+        print(api.findPlaces(type: searchType, lat: lat, lng: lng))
         
  // загружаем все данные из базы
         notificationToken = realm.addNotificationBlock {notification, realm in
@@ -50,6 +58,12 @@ class TableViewController: UITableViewController {
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath)
         cell.textLabel?.text = classPlace[indexPath.row].name
+        if classPlace[indexPath.row].rating == "" {
+            cell.detailTextLabel?.text = "Raiting: -"
+        } else {
+            cell.detailTextLabel?.text = "Raiting: " + classPlace[indexPath.row].rating
+        }
+        cell.backgroundColor = .clear
         return cell
     }
     

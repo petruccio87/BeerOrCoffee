@@ -27,6 +27,11 @@ class FavoritsTableViewController: UITableViewController {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
         
+        let backgroundImage = UIImage(named: "bg.png")
+        let imageView = UIImageView(image: backgroundImage)
+        imageView.contentMode = .scaleAspectFill
+        self.tableView.backgroundView = imageView
+        
         print(Realm.Configuration.defaultConfiguration.fileURL as Any)
         
         if load == nil {
@@ -66,6 +71,12 @@ class FavoritsTableViewController: UITableViewController {
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath)
         cell.textLabel?.text = classPlace[indexPath.row].name
+        if classPlace[indexPath.row].rating == "" {
+            cell.detailTextLabel?.text = "Raiting: -"
+        } else {
+            cell.detailTextLabel?.text = "Raiting: " + classPlace[indexPath.row].rating
+        }
+        cell.backgroundColor = .clear
         return cell
     }
     
