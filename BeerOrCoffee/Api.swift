@@ -18,6 +18,11 @@ class Api {             // пока не используется, функци�
         
         let realm = try! Realm()
         
+        let ft = FilesTasks()       //  по сути не нужен. Просто задание с файлами в домашке
+        let filename = "searchResults.txt"
+        let dir = "/Documents"
+        var contentToFile = ""
+        ft.createFile(dirname: dir, filename: filename) //домашка с файлами - не нужно
         
         //let latlng = "55.761704,37.620350"
         let latlng = String(lat) + "," + String(lng)
@@ -47,6 +52,7 @@ class Api {             // пока не используется, функци�
                         realm.delete(removeData)
                     }
                     
+                    
                     for (key,place):(String, JSON) in json["results"] {
                         let placeData = PlacesData()
                         
@@ -69,9 +75,16 @@ class Api {             // пока не используется, функци�
                             print(placeData)
                             realm.add(placeData, update: true)
                         }
+                        
+                        self.downloadIcon(downloadLink: place["icon"].stringValue, typeIcon: placeType)
+                        contentToFile += place["name"].stringValue+"\n"
                     
                     }
                   //  print("Num of Res: \(json["results"].count)")
+                    
+                    ft.makeContentOfFile(filename: dir+"/"+filename, content: contentToFile)
+                    ft.gzip(filename: dir+"/"+filename, deleteSource: true)
+                    //ft.deleteFile(filename: dir+"/"+filename)
                     
                     load = true as AnyObject
                     
@@ -143,6 +156,37 @@ class Api {             // пока не используется, функци�
             return true
         } else {
             return false
+        }
+    }
+    
+// скачивает иконку для типа заведения
+    func downloadIcon(downloadLink: String, typeIcon: String) {
+        let realm = try! Realm()
+        //        let destination = DownloadRequest.suggestedDownloadDestination(for: .documentDirectory) // не перезаписывает файл
+        let newName = downloadLink.components(separatedBy: "/")
+        let destination: DownloadRequest.DownloadFileDestination = { _, _ in
+            let documentsURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
+            let fileURL = documentsURL.appendingPathComponent(newName.last!)
+            
+            return (fileURL, [.removePreviousFile, .createIntermediateDirectories])
+        }
+        
+        Alamofire.download(downloadLink, to: destination)
+            .downloadProgress { progress in
+                print("Download Progress: \(progress.fractionCompleted)")
+            }
+            .responseData { response in
+                if response.result.value != nil {
+//                    print("Downloaded file \(response.destinationURL?.path) successfully")
+                    let icon = IconsData()
+                    icon.icon_type = typeIcon
+                    icon.icon_url = downloadLink
+                    icon.icon_local = newName.last!
+                    try! realm.write {
+//                        print(icon)
+                        realm.add(icon, update: true)
+                    }
+                }
         }
     }
 }

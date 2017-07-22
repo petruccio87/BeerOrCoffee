@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		104DEE6F1F1DEE71000E5B0A /* SearchViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 104DEE6E1F1DEE71000E5B0A /* SearchViewController.swift */; };
 		104DEE711F1E511B000E5B0A /* Place.swift in Sources */ = {isa = PBXBuildFile; fileRef = 104DEE701F1E511B000E5B0A /* Place.swift */; };
+		104DEE741F23867C000E5B0A /* FileTasks.swift in Sources */ = {isa = PBXBuildFile; fileRef = 104DEE731F23867C000E5B0A /* FileTasks.swift */; };
 		10AF4CBB1F176BEA00F4A109 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 10AF4CBA1F176BEA00F4A109 /* AppDelegate.swift */; };
 		10AF4CBD1F176BEA00F4A109 /* TableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 10AF4CBC1F176BEA00F4A109 /* TableViewController.swift */; };
 		10AF4CC01F176BEA00F4A109 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 10AF4CBE1F176BEA00F4A109 /* Main.storyboard */; };
@@ -44,6 +45,7 @@
 /* Begin PBXFileReference section */
 		104DEE6E1F1DEE71000E5B0A /* SearchViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SearchViewController.swift; sourceTree = "<group>"; };
 		104DEE701F1E511B000E5B0A /* Place.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Place.swift; sourceTree = "<group>"; };
+		104DEE731F23867C000E5B0A /* FileTasks.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FileTasks.swift; sourceTree = "<group>"; };
 		10AF4CB71F176BEA00F4A109 /* BeerOrCoffee.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = BeerOrCoffee.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		10AF4CBA1F176BEA00F4A109 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		10AF4CBC1F176BEA00F4A109 /* TableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TableViewController.swift; sourceTree = "<group>"; };
@@ -126,6 +128,7 @@
 				10AF4CBE1F176BEA00F4A109 /* Main.storyboard */,
 				104DEE6E1F1DEE71000E5B0A /* SearchViewController.swift */,
 				10AF4CEC1F17717100F4A109 /* Api.swift */,
+				104DEE731F23867C000E5B0A /* FileTasks.swift */,
 				10AF4CEA1F17710C00F4A109 /* MapViewController.swift */,
 				10AF4D281F178D1F00F4A109 /* PlacesData.swift */,
 				10AF4CC11F176BEA00F4A109 /* Assets.xcassets */,
@@ -362,6 +365,7 @@
 				10AF4CBD1F176BEA00F4A109 /* TableViewController.swift in Sources */,
 				104DEE6F1F1DEE71000E5B0A /* SearchViewController.swift in Sources */,
 				10AF4CBB1F176BEA00F4A109 /* AppDelegate.swift in Sources */,
+				104DEE741F23867C000E5B0A /* FileTasks.swift in Sources */,
 				10AF4CE91F17702C00F4A109 /* DetailsViewController.swift in Sources */,
 				10AF4D291F178D1F00F4A109 /* PlacesData.swift in Sources */,
 				104DEE711F1E511B000E5B0A /* Place.swift in Sources */,

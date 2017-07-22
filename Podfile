@@ -8,5 +8,6 @@ target 'BeerOrCoffee' do
   pod 'Alamofire', '~> 4.5'
   pod 'RealmSwift', '~> 2.8'
   pod 'SwiftyJSON', '~> 3.1'
-  pod 'GoogleMaps', '~> 2.3' 
+  pod 'GoogleMaps', '~> 2.3'
+  pod "NVHTarGzip"
 end

@@ -8,9 +8,15 @@
 
 
 import UIKit
+import RealmSwift
 import GoogleMaps
 
 class MapViewController: UIViewController {
+    
+    let api : Api = Api()
+    let realm = try! Realm()
+    var notificationToken: NotificationToken? = nil
+    var classPlace : [Place] = []
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -38,7 +44,32 @@ class MapViewController: UIViewController {
         marker.title = "Sydney"
         marker.snippet = "Australia"
         marker.map = mapView
+        
+//__________________ обновление и установка маркеров заведений на карте _____________________
+        func updateMarkers() {
+            mapView.clear()
+            self.classPlace = self.api.loadClassPlacesListDB()
+            for place in self.classPlace {
+                let marker = GMSMarker()
+                let latLng = place.latLng.components(separatedBy: ",")
+                marker.position = CLLocationCoordinate2D(latitude: Double(latLng[0])!, longitude: Double(latLng[1])!)
+                marker.title = place.name
+                marker.snippet = place.address
+                marker.map = mapView
+                print("added marker \(marker) -- \(latLng[0]) -- \(latLng[1])")
+            }
+        }
+        
+        updateMarkers()     // при начальной загрузке, берет данные из старого поиска в базе
+        notificationToken = realm.addNotificationBlock {notification, realm in
+            updateMarkers() // после нового поиска в базе меняются данные и вызывается обновление маркеров
+        }
+//___________________________________________________________________________________________
+        
+        
     }
+    
+    
     
     /*
      // MARK: - Navigation
@@ -49,5 +80,9 @@ class MapViewController: UIViewController {
      // Pass the selected object to the new view controller.
      }
      */
+    
+    deinit {
+        notificationToken?.stop()
+    }
     
 }

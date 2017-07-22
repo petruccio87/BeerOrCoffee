@@ -9,6 +9,11 @@
 			<key>isShown</key>
 			<false/>
 		</dict>
+		<key>NVHTarGzip.xcscheme</key>
+		<dict>
+			<key>isShown</key>
+			<false/>
+		</dict>
 		<key>Pods-BeerOrCoffee.xcscheme</key>
 		<dict>
 			<key>isShown</key>
@@ -32,17 +37,22 @@
 	</dict>
 	<key>SuppressBuildableAutocreation</key>
 	<dict>
-		<key>4E3B439F63AD5FA6D923C96C8A36FD17</key>
+		<key>0CC5302459241C266B16F2B80A5C90FF</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>5F85856B75896A392CA24C68CED82AA9</key>
+		<key>2DA67C59E04916FECB1660CC316D8DB6</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>7DCD85CE51EFE2D892AF8654A658F35D</key>
+		<key>3F5E8E0C9B5160C17BA9E5A4A2F13889</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>69FE62A3273103DC2837588C187D72EC</key>
 		<dict>
 			<key>primary</key>
 			<true/>
@@ -52,7 +62,7 @@
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>C3343E09EB7475BF8A3B7598F90574DB</key>
+		<key>E9C2AD36264B9881A4638A38FA019D48</key>
 		<dict>
 			<key>primary</key>
 			<true/>

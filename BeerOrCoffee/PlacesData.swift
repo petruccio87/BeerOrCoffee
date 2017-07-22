@@ -38,3 +38,13 @@ class FavoritsData: Object {
         return "place_id"
     }
 }
+
+class IconsData: Object {
+    dynamic var icon_type: String = ""
+    dynamic var icon_url: String = ""
+    dynamic var icon_local: String = ""
+    
+    override static func primaryKey() -> String? {
+        return "icon_url"
+    }
+}

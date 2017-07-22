@@ -80,8 +80,8 @@ class FavoritsTableViewController: UITableViewController {
         return cell
     }
     
+//        метод для создания свайпа влево и кнопки удалить
     override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
-        //        метод для создания свайпа влево и кнопки удалить
         api.removePlaceFromDB(place_id: classPlace[indexPath.row].place_id)
         // удалять руками из списка не нужно - мы подписаны на нотификацию при изменении базы данных
         tableView.reloadData()
