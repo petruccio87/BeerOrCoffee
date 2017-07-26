@@ -37,13 +37,25 @@ class TableViewController: UITableViewController {
         print(Realm.Configuration.defaultConfiguration.fileURL as Any)
         
  // ищем каждый раз
-        print(api.findPlaces(type: searchType, lat: lat, lng: lng))
         
+        print("1. start find places \(Thread.current)")
+        print(self.api.findPlaces(type: self.searchType, lat: self.lat, lng: self.lng))
+        
+////        semaphoreFindPlaces.wait(timeout: .distantFuture)
+//        print("4. Semaphore recieved \(Thread.current)")
+//        classPlace = api.loadClassPlacesListDB()
+//        tableView.reloadData()
+        
+//------------------- Работает через реалм нотификацию -------------------
+// ищем каждый раз
+//        print(api.findPlaces(type: searchType, lat: lat, lng: lng))
  // загружаем все данные из базы
-        notificationToken = realm.addNotificationBlock {notification, realm in
-            self.classPlace = self.api.loadClassPlacesListDB()
-            self.tableView.reloadData()
-        }
+//  прекрасно работает, но нам надо сделать свою нотификацию вместо реалмовской
+//        notificationToken = realm.addNotificationBlock {notification, realm in
+//            self.classPlace = self.api.loadClassPlacesListDB()
+//            self.tableView.reloadData()
+//        }
+//-----------------------------------------------------------------------
     
     }
     
@@ -122,10 +134,11 @@ class TableViewController: UITableViewController {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
-    
-    deinit {
-        notificationToken?.stop()
-    }
+
+//  включить когда используется реальмовская нотификация
+//    deinit {
+//        notificationToken?.stop()
+//    }
     
 }
 

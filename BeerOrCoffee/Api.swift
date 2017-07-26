@@ -12,17 +12,23 @@ import Alamofire
 import RealmSwift
 import SwiftyJSON
 
+var semaphoreFindPlaces = DispatchSemaphore(value: 0) // создаем семафор
+let concurrentQueue = DispatchQueue(label: "concurrent_queue", attributes: .concurrent)
+let serialQueue = DispatchQueue(label: "serial_queue")
+
 class Api {             // пока не используется, функция поиска в классе TableViewController
     
     func findPlaces(type: String, lat: Double, lng: Double) {
         
-        let realm = try! Realm()
+        concurrentQueue.async {
+           
         
-        let ft = FilesTasks()       //  по сути не нужен. Просто задание с файлами в домашке
+        print("1. INSIDE start findplaces \(Thread.current)")
+//        let ft = FilesTasks()       //  по сути не нужен. Просто задание с файлами в домашке
         let filename = "searchResults.txt"
         let dir = "/Documents"
         var contentToFile = ""
-        ft.createFile(dirname: dir, filename: filename) //домашка с файлами - не нужно
+//        ft.createFile(dirname: dir, filename: filename) //домашка с файлами - не нужно
         
         //let latlng = "55.761704,37.620350"
         let latlng = String(lat) + "," + String(lng)
@@ -41,16 +47,15 @@ class Api {             // пока не используется, функци�
         let urlByRadius = "https://maps.googleapis.com/maps/api/place/nearbysearch/json?location="+latlng+"&radius="+radius+"&opennow=true&type="+placeType+"&language="+language+"&key=" + apikey
         let urlByDistance = "https://maps.googleapis.com/maps/api/place/nearbysearch/json?location="+latlng+"&rankby="+rankby+"&opennow=true&type="+placeType+"&language="+language+"&key=" + apikey
         
-        Alamofire.request(urlByDistance, method: .get).validate().responseJSON { response in
+        Alamofire.request(urlByDistance, method: .get).validate().responseJSON(queue: concurrentQueue) { response in
             switch response.result{
             case .success(let value):
+                print("2. INSIDE Alomofire \(Thread.current)")
+                
                 let json = JSON(value)
                 if json["status"].stringValue == "OK" {
                     
-                    let removeData = realm.objects(PlacesData.self)     // очищаем результаты поиска перед запоминанием новых результатов поиска
-                    try! realm.write {
-                        realm.delete(removeData)
-                    }
+                    self.clearResultsDB()
                     
                     
                     for (key,place):(String, JSON) in json["results"] {
@@ -70,21 +75,20 @@ class Api {             // пока не используется, функци�
                         placeData.latLng = place["geometry"]["location"]["lat"].stringValue+","+place["geometry"]["location"]["lng"].stringValue
                         placeData.address = place["vicinity"].stringValue
                        // placeData.favorit = false
+                       
+                        self.writePlaceToDB(data: placeData)
                         
-                        try! realm.write {
-                            print(placeData)
-                            realm.add(placeData, update: true)
-                        }
                         
                         self.downloadIcon(downloadLink: place["icon"].stringValue, typeIcon: placeType)
-                        contentToFile += place["name"].stringValue+"\n"
+//                        contentToFile += place["name"].stringValue+"\n"
                     
                     }
                   //  print("Num of Res: \(json["results"].count)")
                     
-                    ft.makeContentOfFile(filename: dir+"/"+filename, content: contentToFile)
-                    ft.gzip(filename: dir+"/"+filename, deleteSource: true)
-                    //ft.deleteFile(filename: dir+"/"+filename)
+//              дз про работу с файлами - в принципе не нужно.
+//                    ft.makeContentOfFile(filename: dir+"/"+filename, content: contentToFile)
+//                    ft.gzip(filename: dir+"/"+filename, deleteSource: true)
+//                    ft.deleteFile(filename: dir+"/"+filename)
                     
                     load = true as AnyObject
                     
@@ -94,9 +98,36 @@ class Api {             // пока не используется, функци�
             case .failure(let error):
                 print(error)
             }
+            print("3. INSIDE Alomofire - the end \(Thread.current)")
+            
         }
+    }   // end concurentQueue
     }
-    
+
+    func writePlaceToDB(data: PlacesData) {
+        let realm = try! Realm()
+        try! realm.write {
+            realm.add(data, update: true)
+        }
+//        semaphoreFindPlaces.signal()
+        print(". writePlaceToDB \(Thread.current)")
+    }
+    func writeIconToDB(icon: IconsData) {
+        let realm = try! Realm()
+        try! realm.write {
+            realm.add(icon, update: true)
+        }
+        //        semaphoreFindPlaces.signal()
+        print(". writeIconToDB \(Thread.current)")
+    }
+    func clearResultsDB() {
+        let realm = try! Realm()
+        let removeData = realm.objects(PlacesData.self)     // очищаем результаты поиска перед запоминанием новых результатов поиска
+        try! realm.write {
+            realm.delete(removeData)
+        }
+        print(". clearResultsDB \(Thread.current)")
+    }
 
 // возвращает ВСЕ данные из базы
     func loadClassPlacesListDB() -> [Place]  {
@@ -161,7 +192,6 @@ class Api {             // пока не используется, функци�
     
 // скачивает иконку для типа заведения
     func downloadIcon(downloadLink: String, typeIcon: String) {
-        let realm = try! Realm()
         //        let destination = DownloadRequest.suggestedDownloadDestination(for: .documentDirectory) // не перезаписывает файл
         let newName = downloadLink.components(separatedBy: "/")
         let destination: DownloadRequest.DownloadFileDestination = { _, _ in
@@ -173,22 +203,46 @@ class Api {             // пока не используется, функци�
         
         Alamofire.download(downloadLink, to: destination)
             .downloadProgress { progress in
-                print("Download Progress: \(progress.fractionCompleted)")
+                print("Download Progress: \(progress.fractionCompleted) --- \(Thread.current)")
             }
-            .responseData { response in
+            .responseData(queue: concurrentQueue) { response in
                 if response.result.value != nil {
 //                    print("Downloaded file \(response.destinationURL?.path) successfully")
                     let icon = IconsData()
                     icon.icon_type = typeIcon
                     icon.icon_url = downloadLink
                     icon.icon_local = newName.last!
-                    try! realm.write {
-//                        print(icon)
-                        realm.add(icon, update: true)
-                    }
+                    
+                    self.writeIconToDB(icon: icon)
                 }
         }
     }
+    
+//------------------------------------------------------------------------
+    // для дз с загрузкой 3 изображений с задержкой - в проекте не нужно
+    func myLoadJPG(url: String) -> UIImage {
+        var image = UIImage()
+        var imageData: Data?
+        let url1 = URL(string: url)
+        concurrentQueue.sync() {
+            print("1. start \(Thread.current)")
+            do {
+                imageData = try  Data(contentsOf: url1!)
+                print("2. dataload \(imageData)")
+            } catch{
+                print("error")
+            }
+            if let value =  imageData{
+                image = UIImage(data: value)!
+                print("3. image \(image)")
+            }
+            
+        }
+        print("4. return \(image)")
+        return image
+    }
+
+//------------------------------------------------------------------------
 }
 
 
@@ -201,4 +255,6 @@ var load: AnyObject? {
         UserDefaults.standard.set(newValue, forKey: "flag")
         UserDefaults.standard.synchronize()
     }
+    
 }
+

@@ -86,8 +86,8 @@ determineMyCurrentLocation()
         // manager.stopUpdatingLocation()
         lat = userLocation.coordinate.latitude
         lng = userLocation.coordinate.longitude
-        print("My Lat = \(userLocation.coordinate.latitude)")
-        print("My Lng = \(userLocation.coordinate.longitude)")
+//        print("My Lat = \(userLocation.coordinate.latitude)")
+//        print("My Lng = \(userLocation.coordinate.longitude)")
     }
     
     func locationManager(_ manager: CLLocationManager, didFailWithError error: Error)

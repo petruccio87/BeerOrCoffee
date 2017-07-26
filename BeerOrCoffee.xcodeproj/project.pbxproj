@@ -22,6 +22,7 @@
 		10AF4CED1F17717100F4A109 /* Api.swift in Sources */ = {isa = PBXBuildFile; fileRef = 10AF4CEC1F17717100F4A109 /* Api.swift */; };
 		10AF4D291F178D1F00F4A109 /* PlacesData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 10AF4D281F178D1F00F4A109 /* PlacesData.swift */; };
 		10AF4D2B1F17B5C900F4A109 /* FavoritsTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 10AF4D2A1F17B5C900F4A109 /* FavoritsTableViewController.swift */; };
+		10FC51901F28F1990064CB78 /* DZ_3Image_ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 10FC518F1F28F1980064CB78 /* DZ_3Image_ViewController.swift */; };
 		A781C036F5815364A02CC78D /* Pods_BeerOrCoffee.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 193195EC187BC494343DB6EB /* Pods_BeerOrCoffee.framework */; };
 /* End PBXBuildFile section */
 
@@ -64,6 +65,7 @@
 		10AF4CEC1F17717100F4A109 /* Api.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Api.swift; sourceTree = "<group>"; };
 		10AF4D281F178D1F00F4A109 /* PlacesData.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PlacesData.swift; sourceTree = "<group>"; };
 		10AF4D2A1F17B5C900F4A109 /* FavoritsTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FavoritsTableViewController.swift; sourceTree = "<group>"; };
+		10FC518F1F28F1980064CB78 /* DZ_3Image_ViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DZ_3Image_ViewController.swift; sourceTree = "<group>"; };
 		193195EC187BC494343DB6EB /* Pods_BeerOrCoffee.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_BeerOrCoffee.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		2DA184DBF22EAC67363ADACB /* Pods-BeerOrCoffee.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BeerOrCoffee.debug.xcconfig"; path = "Pods/Target Support Files/Pods-BeerOrCoffee/Pods-BeerOrCoffee.debug.xcconfig"; sourceTree = "<group>"; };
 		BD3AB299C0D2352AC7A5BB42 /* Pods-BeerOrCoffee.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BeerOrCoffee.release.xcconfig"; path = "Pods/Target Support Files/Pods-BeerOrCoffee/Pods-BeerOrCoffee.release.xcconfig"; sourceTree = "<group>"; };
@@ -126,6 +128,7 @@
 				10AF4CBC1F176BEA00F4A109 /* TableViewController.swift */,
 				10AF4D2A1F17B5C900F4A109 /* FavoritsTableViewController.swift */,
 				10AF4CBE1F176BEA00F4A109 /* Main.storyboard */,
+				10FC518F1F28F1980064CB78 /* DZ_3Image_ViewController.swift */,
 				104DEE6E1F1DEE71000E5B0A /* SearchViewController.swift */,
 				10AF4CEC1F17717100F4A109 /* Api.swift */,
 				104DEE731F23867C000E5B0A /* FileTasks.swift */,
@@ -367,6 +370,7 @@
 				10AF4CBB1F176BEA00F4A109 /* AppDelegate.swift in Sources */,
 				104DEE741F23867C000E5B0A /* FileTasks.swift in Sources */,
 				10AF4CE91F17702C00F4A109 /* DetailsViewController.swift in Sources */,
+				10FC51901F28F1990064CB78 /* DZ_3Image_ViewController.swift in Sources */,
 				10AF4D291F178D1F00F4A109 /* PlacesData.swift in Sources */,
 				104DEE711F1E511B000E5B0A /* Place.swift in Sources */,
 				10AF4CED1F17717100F4A109 /* Api.swift in Sources */,
