@@ -15,8 +15,7 @@ class SearchViewController: UIViewController, CLLocationManagerDelegate {
     @IBOutlet weak var label: UILabel!
     
     var searchType = "Bar"      // передается аргументом в функцию поиска
-    var lat : Double = 0
-    var lng : Double = 0
+    
     var locationManager:CLLocationManager!
     
     override func viewDidLoad() {

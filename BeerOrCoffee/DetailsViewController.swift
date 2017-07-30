@@ -14,6 +14,7 @@ import GoogleMaps
 class DetailsViewController: UIViewController {
     
     @IBOutlet weak var mapView: GMSMapView!
+//    var mapView:GMSMapView?
     
     
     var place = Place()
@@ -42,18 +43,23 @@ class DetailsViewController: UIViewController {
             favButton.setImage(favImage, for: .normal)
         }
         
-//        let camera = GMSCameraPosition.camera(withLatitude: -33.86, longitude: 151.20, zoom: 6.0)
-//        let mapView = GMSMapView.map(withFrame: CGRect.zero, camera: camera)
-//        mapView.isMyLocationEnabled = true
+        
+        let latLng = place.latLng.components(separatedBy: ",")
+        mapView.camera = GMSCameraPosition.camera(withLatitude: Double(latLng[0])!, longitude: Double(latLng[1])!, zoom: 15.0)
+        let marker = GMSMarker()
+        marker.position = CLLocationCoordinate2D(latitude: Double(latLng[0])!, longitude: Double(latLng[1])!)
+        marker.title = place.name
+        marker.snippet = place.address
+        marker.map = mapView
+        mapView.selectedMarker = marker // открывает описание маркера
+        mapView.isMyLocationEnabled = true
 //        mapView.settings.myLocationButton = true
-//        view = mapView
-//        
-//        // Creates a marker in the center of the map.
-//        let marker = GMSMarker()
-//        marker.position = CLLocationCoordinate2D(latitude: -33.86, longitude: 151.20)
-//        marker.title = "Sydney"
-//        marker.snippet = "Australia"
-//        marker.map = mapView
+//        let iconName = place.icon.components(separatedBy: "/")
+//        let documentsURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
+//        let iconURL = documentsURL.appendingPathComponent(iconName.last!)
+//        marker.icon = UIImage(named: iconURL.path)
+
+        
     }
     
     override func didReceiveMemoryWarning() {

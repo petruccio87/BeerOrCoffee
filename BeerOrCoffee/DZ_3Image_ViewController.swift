@@ -14,6 +14,8 @@ class DZ_3Image_ViewController: UIViewController {
                            "https://imagecdn3.luxnet.ua/tv24/resources/photos/news/640x480_DIR/201707/845508.jpg",
                            "http://www.wlsa.com.au/wp-content/uploads/2017/03/WLSA-kayaking2.jpg",
                            "https://smart-lab.ru/uploads/images/00/18/53/2015/07/21/e61bf2.jpg"]
+    var urlIndex = 0
+    
     let api : Api = Api()
     
     @IBOutlet weak var imageView: UIImageView!
@@ -22,20 +24,66 @@ class DZ_3Image_ViewController: UIViewController {
         print("Print Test =)")
     }
     
+//    @IBAction func startLoad(_ sender: Any) {
+//        concurrentQueue.async(qos: .userInitiated) {
+//            print("Start cycle - \(Thread.current)")
+//            for url in self.urls {
+//                print("Load image - \(Thread.current)")
+//                let image = self.myLoadJPG(url: url)
+//                DispatchQueue.main.sync {
+//                    print("Show image - \(Thread.current)")
+//                    self.imageView.image = image
+//                }
+//                print("Delay - \(Thread.current)")
+//                sleep(3)        // да, просто. но работает
+//            }
+//        }
+//    }
+    
     @IBAction func startLoad(_ sender: Any) {
+        self.load()
+    }
+    
+    func load() {
         concurrentQueue.async(qos: .userInitiated) {
-            print("Start cycle - \(Thread.current)")
-            for url in self.urls {
+            if  self.urlIndex < self.urls.count {
                 print("Load image - \(Thread.current)")
-                let image = self.api.myLoadJPG(url: url)
-                DispatchQueue.main.async {
+                let image = self.myLoadJPG(url: self.urls[self.urlIndex])
+                DispatchQueue.main.sync {
                     print("Show image - \(Thread.current)")
                     self.imageView.image = image
+                    self.urlIndex += 1
+                    DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(2)) {
+                        self.load()
+                    }
                 }
                 print("Delay - \(Thread.current)")
-                sleep(3)        // да, просто. но работает
+            } else {
+                print("end loading urls")
+                self.urlIndex = 0
             }
         }
+    }
+    func myLoadJPG(url: String) -> UIImage {
+        var image = UIImage()
+        var imageData: Data?
+        let url1 = URL(string: url)
+        concurrentQueue.sync() {
+            print("1. start \(Thread.current)")
+            do {
+                imageData = try  Data(contentsOf: url1!)
+                print("2. dataload \(imageData)")
+            } catch{
+                print("error")
+            }
+            if let value =  imageData{
+                image = UIImage(data: value)!
+                print("3. image \(image)")
+            }
+            
+        }
+        print("4. return \(image)")
+        return image
     }
     
     

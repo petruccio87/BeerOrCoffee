@@ -109,7 +109,7 @@ class Api {             // пока не используется, функци�
         try! realm.write {
             realm.add(data, update: true)
         }
-//        semaphoreFindPlaces.signal()
+        NotificationCenter.default.post(name: NSNotification.Name(rawValue: "writePlaceToDB"), object: nil)
         print(". writePlaceToDB \(Thread.current)")
     }
     func writeIconToDB(icon: IconsData) {
@@ -218,31 +218,7 @@ class Api {             // пока не используется, функци�
         }
     }
     
-//------------------------------------------------------------------------
-    // для дз с загрузкой 3 изображений с задержкой - в проекте не нужно
-    func myLoadJPG(url: String) -> UIImage {
-        var image = UIImage()
-        var imageData: Data?
-        let url1 = URL(string: url)
-        concurrentQueue.sync() {
-            print("1. start \(Thread.current)")
-            do {
-                imageData = try  Data(contentsOf: url1!)
-                print("2. dataload \(imageData)")
-            } catch{
-                print("error")
-            }
-            if let value =  imageData{
-                image = UIImage(data: value)!
-                print("3. image \(image)")
-            }
-            
-        }
-        print("4. return \(image)")
-        return image
-    }
 
-//------------------------------------------------------------------------
 }
 
 

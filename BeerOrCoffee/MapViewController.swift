@@ -32,18 +32,18 @@ class MapViewController: UIViewController {
     override func loadView() {
         // Create a GMSCameraPosition that tells the map to display the
         // coordinate -33.86,151.20 at zoom level 6.
-        let camera = GMSCameraPosition.camera(withLatitude: -33.86, longitude: 151.20, zoom: 6.0)
+        let camera = GMSCameraPosition.camera(withLatitude: lat, longitude: lng, zoom: 14.0)
         let mapView = GMSMapView.map(withFrame: CGRect.zero, camera: camera)
         mapView.isMyLocationEnabled = true
         mapView.settings.myLocationButton = true
         view = mapView
         
         // Creates a marker in the center of the map.
-        let marker = GMSMarker()
-        marker.position = CLLocationCoordinate2D(latitude: -33.86, longitude: 151.20)
-        marker.title = "Sydney"
-        marker.snippet = "Australia"
-        marker.map = mapView
+//        let marker = GMSMarker()
+//        marker.position = CLLocationCoordinate2D(latitude: -33.86, longitude: 151.20)
+//        marker.title = "Sydney"
+//        marker.snippet = "Australia"
+//        marker.map = mapView
         
 //__________________ обновление и установка маркеров заведений на карте _____________________
         func updateMarkers() {
@@ -57,6 +57,11 @@ class MapViewController: UIViewController {
                 marker.snippet = place.address
                 marker.map = mapView
                 print("added marker \(marker) -- \(latLng[0]) -- \(latLng[1])")
+                
+//                let iconName = place.icon.components(separatedBy: "/")
+//                let documentsURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
+//                let iconURL = documentsURL.appendingPathComponent(iconName.last!)
+//                marker.icon = UIImage(named: iconURL.path)
             }
         }
         

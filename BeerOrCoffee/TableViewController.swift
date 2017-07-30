@@ -18,7 +18,7 @@ class TableViewController: UITableViewController {
     
     let api : Api = Api()
     let realm = try! Realm()
-    var notificationToken: NotificationToken? = nil
+    var notificationToken: NotificationToken? = nil     // нотификация realm
     var searchType = "Bar"  // меняется через seque
     var lat: Double = 0
     var lng: Double = 0
@@ -41,10 +41,8 @@ class TableViewController: UITableViewController {
         print("1. start find places \(Thread.current)")
         print(self.api.findPlaces(type: self.searchType, lat: self.lat, lng: self.lng))
         
-////        semaphoreFindPlaces.wait(timeout: .distantFuture)
-//        print("4. Semaphore recieved \(Thread.current)")
-//        classPlace = api.loadClassPlacesListDB()
-//        tableView.reloadData()
+        NotificationCenter.default.addObserver(self, selector: #selector(refreshTableView), name: NSNotification.Name(rawValue: "writePlaceToDB"), object: nil)
+        
         
 //------------------- Работает через реалм нотификацию -------------------
 // ищем каждый раз
@@ -57,6 +55,13 @@ class TableViewController: UITableViewController {
 //        }
 //-----------------------------------------------------------------------
     
+    }
+    
+    func refreshTableView() {
+        self.classPlace = self.api.loadClassPlacesListDB()
+        DispatchQueue.main.sync {
+            self.tableView.reloadData()
+        }
     }
     
     override func numberOfSections(in tableView: UITableView) -> Int {
@@ -135,10 +140,11 @@ class TableViewController: UITableViewController {
         // Dispose of any resources that can be recreated.
     }
 
-//  включить когда используется реальмовская нотификация
-//    deinit {
-//        notificationToken?.stop()
-//    }
+
+    deinit {
+//        notificationToken?.stop()       //  включить когда используется реальмовская нотификация
+        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: "writePlaceToDB"), object: nil)
+    }
     
 }
 

@@ -47,3 +47,5 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 }
 
 let apikey = "AIzaSyBzfEMMl1BGXGoLngcVuEdu2HvOGTMVT48"
+var lat : Double = 0
+var lng : Double = 0    // текущие координаты устройства
