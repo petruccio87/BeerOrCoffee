@@ -17,11 +17,11 @@ import SwiftyJSON
 
 class FavoritsTableViewController: UITableViewController {
     
-    let api : Api = Api()
+//    let api : Api = Api()
     let realm = try! Realm()
     var notificationToken: NotificationToken? = nil
     
-    var classPlace : [Place] = []
+//    var classPlace : [Place] = []
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -34,14 +34,17 @@ class FavoritsTableViewController: UITableViewController {
         
         print(Realm.Configuration.defaultConfiguration.fileURL as Any)
         
+        
         if load == nil {
 //     api.findPlaces()      //если еще не запускались, то и любимых мест нет
         } else {
-            classPlace = api.loadClassFavPlacesListDB()
+//            classPlace = api.loadClassFavPlacesListDB()
+            Api.sharedApi.getFavPlacesDataFromDB()
         }
         
         notificationToken = realm.addNotificationBlock {notification, realm in
-            self.classPlace = self.api.loadClassFavPlacesListDB()
+//            self.classPlace = self.api.loadClassFavPlacesListDB()
+            Api.sharedApi.getFavPlacesDataFromDB()
             self.tableView.reloadData()
         }
         
@@ -52,29 +55,31 @@ class FavoritsTableViewController: UITableViewController {
     }
     
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        if classPlace.count == 0 {      // заглушка - тут надо как-то показывать сообщение вместо пустой таблицы
-            let tmpPlace = Place()
-            tmpPlace.name = "So far there is Nothing"
-            tmpPlace.place_id = ""
-            tmpPlace.priceLevel = ""
-            tmpPlace.rating = ""
-            tmpPlace.latLng = ""
-            tmpPlace.address = ""
-            tmpPlace.favorite = false
-            tmpPlace.icon = ""
-            classPlace.append(tmpPlace)
-            return 1
-        }
-        return classPlace.count
+//        if Api.sharedApi.favPlacesData.count == 0 {      // заглушка - тут надо как-то показывать сообщение вместо пустой таблицы
+//            let tmpPlace = Place()
+//            tmpPlace.name = "So far there is Nothing"
+//            tmpPlace.place_id = ""
+//            tmpPlace.priceLevel = ""
+//            tmpPlace.rating = ""
+//            tmpPlace.latLng = ""
+//            tmpPlace.address = ""
+//            tmpPlace.favorite = false
+//            tmpPlace.icon = ""
+//            classPlace.append(tmpPlace)
+//            return 1
+//        }
+//        return classPlace.count
+        return Api.sharedApi.favPlacesData.count
     }
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath)
-        cell.textLabel?.text = classPlace[indexPath.row].name
-        if classPlace[indexPath.row].rating == "" {
+        cell.textLabel?.text = Api.sharedApi.favPlacesData[indexPath.row].place_name
+        if Api.sharedApi.favPlacesData[indexPath.row].raiting == "" {
             cell.detailTextLabel?.text = "Raiting: -"
         } else {
-            cell.detailTextLabel?.text = "Raiting: " + classPlace[indexPath.row].rating
+//            cell.detailTextLabel?.text = "Raiting: " + classPlace[indexPath.row].rating
+            cell.detailTextLabel?.text = "Raiting: " + Api.sharedApi.favPlacesData[indexPath.row].raiting
         }
         cell.backgroundColor = .clear
         return cell
@@ -82,7 +87,7 @@ class FavoritsTableViewController: UITableViewController {
     
 //        метод для создания свайпа влево и кнопки удалить
     override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
-        api.removePlaceFromDB(place_id: classPlace[indexPath.row].place_id)
+        Api.sharedApi.removePlaceFromDB(place_id: Api.sharedApi.favPlacesData[indexPath.row].place_id)
         // удалять руками из списка не нужно - мы подписаны на нотификацию при изменении базы данных
         tableView.reloadData()
     }
@@ -91,10 +96,17 @@ class FavoritsTableViewController: UITableViewController {
         if segue.identifier == "details" {
             if let indexPath = tableView.indexPathForSelectedRow {
                 let destinationVC = segue.destination as! DetailsViewController
-                destinationVC.place = classPlace[indexPath.row]
+//                destinationVC.place = classPlace[indexPath.row]
+                destinationVC.index = indexPath.row
+                destinationVC.from = "fromFavorits"
             }
             
         }
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        Api.sharedApi.clearFavoritsDB()
     }
 
     override func didReceiveMemoryWarning() {

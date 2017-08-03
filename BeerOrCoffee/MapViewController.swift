@@ -48,21 +48,43 @@ class MapViewController: UIViewController {
 //__________________ обновление и установка маркеров заведений на карте _____________________
         func updateMarkers() {
             mapView.clear()
-            self.classPlace = self.api.loadClassPlacesListDB()
-            for place in self.classPlace {
+            
+            Api.sharedApi.getPlacesDataFromDB()
+            Api.sharedApi.getFavPlacesDataFromDB()
+            for place in Api.sharedApi.placesData {
                 let marker = GMSMarker()
                 let latLng = place.latLng.components(separatedBy: ",")
                 marker.position = CLLocationCoordinate2D(latitude: Double(latLng[0])!, longitude: Double(latLng[1])!)
-                marker.title = place.name
+                marker.title = place.place_name
                 marker.snippet = place.address
                 marker.map = mapView
                 print("added marker \(marker) -- \(latLng[0]) -- \(latLng[1])")
-                
+            }
+            for place in Api.sharedApi.favPlacesData {
+                let marker = GMSMarker()
+                let latLng = place.latLng.components(separatedBy: ",")
+                marker.position = CLLocationCoordinate2D(latitude: Double(latLng[0])!, longitude: Double(latLng[1])!)
+                marker.title = place.place_name
+                marker.snippet = place.address
+                marker.map = mapView
+                print("added marker \(marker.title ?? "title") -- \(Thread.current)")
+            }
+//            self.classPlace = self.api.loadClassPlacesListDB()
+//            for place in self.classPlace {
+//                let marker = GMSMarker()
+//                let latLng = place.latLng.components(separatedBy: ",")
+//                marker.position = CLLocationCoordinate2D(latitude: Double(latLng[0])!, longitude: Double(latLng[1])!)
+//                marker.title = place.name
+//                marker.snippet = place.address
+//                marker.map = mapView
+//                print("added marker \(marker) -- \(latLng[0]) -- \(latLng[1])")
+
+//----------- свои иконки ----------
 //                let iconName = place.icon.components(separatedBy: "/")
 //                let documentsURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
 //                let iconURL = documentsURL.appendingPathComponent(iconName.last!)
 //                marker.icon = UIImage(named: iconURL.path)
-            }
+//            }
         }
         
         updateMarkers()     // при начальной загрузке, берет данные из старого поиска в базе

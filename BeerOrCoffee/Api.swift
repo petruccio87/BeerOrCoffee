@@ -12,18 +12,88 @@ import Alamofire
 import RealmSwift
 import SwiftyJSON
 
-var semaphoreFindPlaces = DispatchSemaphore(value: 0) // создаем семафор
+//var semaphoreFindPlaces = DispatchSemaphore(value: 0) // создаем семафор
 let concurrentQueue = DispatchQueue(label: "concurrent_queue", attributes: .concurrent)
 let serialQueue = DispatchQueue(label: "serial_queue")
 
-class Api {             // пока не используется, функция поиска в классе TableViewController
+
+private let _sharedApi = Api()
+
+class Api {
+    
+    //    --------------------------------------------
+    //    singltone
+    
+    class var sharedApi: Api {
+        return _sharedApi
+    }
+    //    --------------------------------------------
+    private var _placesData: [PlacesData] = []
+    
+    var placesData: [PlacesData] {
+        var placesDataCopy: [PlacesData]!
+        concurrentQueue.sync {
+            placesDataCopy = self._placesData
+//            print("self._placesData: \(self._placesData)")
+        }
+        
+        return placesDataCopy
+    }
+    private var _favPlacesData: [FavoritsData] = []
+    
+    var favPlacesData: [FavoritsData] {
+        var favPlacesDataCopy: [FavoritsData]!
+        concurrentQueue.sync {
+            favPlacesDataCopy = self._favPlacesData
+        }
+        
+        return favPlacesDataCopy
+    }
+    //    --------------------------------------------
+    //    data from DB
+    func getPlacesDataFromDB() {
+        let realm = try! Realm()
+        self._placesData = Array(realm.objects(PlacesData.self))
+    }
+    func getFavPlacesDataFromDB() {
+        let realm = try! Realm()
+        self._favPlacesData = Array(realm.objects(FavoritsData.self).filter("favorit == true"))
+        //        print(self._placesData)
+    }
+    //--------------------------------------------
+//    fileprivate var _placeList: [Place] = []
+//    
+//    var placeList: [Place]? {
+//        var placeListCopy: [Place]!
+//        concurrentQueue.sync {
+//            placeListCopy = self._placeList
+//        }
+//        return placeListCopy
+//    }
+//    
+//    func resetPlaceList(){
+//        concurrentQueue.sync {
+//            _placeList = []
+//        }
+//    }
+//
+//    func getPlaceListFromDB() {
+//        let realm = try! Realm()
+//        self._placeList = Array(realm.objects(PlaceList))
+//    }
+    
     
     func findPlaces(type: String, lat: Double, lng: Double) {
         
-        concurrentQueue.async {
-           
         
-        print("1. INSIDE start findplaces \(Thread.current)")
+//        concurrentQueue.sync {
+//        concurrentQueue.async {
+////
+//                Api.sharedApi.clearResultsDB()        //не знаю в каком месте очищать чтобы все не падало
+////
+//        }
+        
+//        print("1. INSIDE start findplaces \(Thread.current)")
 //        let ft = FilesTasks()       //  по сути не нужен. Просто задание с файлами в домашке
         let filename = "searchResults.txt"
         let dir = "/Documents"
@@ -46,7 +116,7 @@ class Api {             // пока не используется, функци�
         
         let urlByRadius = "https://maps.googleapis.com/maps/api/place/nearbysearch/json?location="+latlng+"&radius="+radius+"&opennow=true&type="+placeType+"&language="+language+"&key=" + apikey
         let urlByDistance = "https://maps.googleapis.com/maps/api/place/nearbysearch/json?location="+latlng+"&rankby="+rankby+"&opennow=true&type="+placeType+"&language="+language+"&key=" + apikey
-        
+//        self.clearResultsDB()
         Alamofire.request(urlByDistance, method: .get).validate().responseJSON(queue: concurrentQueue) { response in
             switch response.result{
             case .success(let value):
@@ -55,17 +125,17 @@ class Api {             // пока не используется, функци�
                 let json = JSON(value)
                 if json["status"].stringValue == "OK" {
                     
-                    self.clearResultsDB()
+                    
                     
                     
                     for (key,place):(String, JSON) in json["results"] {
                         let placeData = PlacesData()
                         
-                        print(key, " ", place["name"].stringValue)
-                        print("     Rating: ", place["rating"].stringValue)
-                        print("     Price Level: ", place["price_level"].stringValue)   // не везде есть
-                        print("     LatLng: ", place["geometry"]["location"]["lat"].stringValue, ",", place["geometry"] ["location"]["lng"].stringValue)
-                        print("     Адрес: ", place["vicinity"].stringValue)
+//                        print(key, " ", place["name"].stringValue)
+//                        print("     Rating: ", place["rating"].stringValue)
+//                        print("     Price Level: ", place["price_level"].stringValue)   // не везде есть
+//                        print("     LatLng: ", place["geometry"]["location"]["lat"].stringValue, ",", place["geometry"] ["location"]["lng"].stringValue)
+//                        print("     Адрес: ", place["vicinity"].stringValue)
                         
                         placeData.place_name = place["name"].stringValue
                         placeData.place_id = place["place_id"].stringValue
@@ -101,13 +171,16 @@ class Api {             // пока не используется, функци�
             print("3. INSIDE Alomofire - the end \(Thread.current)")
             
         }
-    }   // end concurentQueue
+//    }   // end concurentQueue
     }
 
     func writePlaceToDB(data: PlacesData) {
         let realm = try! Realm()
         try! realm.write {
             realm.add(data, update: true)
+        }
+        DispatchQueue.main.async {
+                        Api.sharedApi.getPlacesDataFromDB()
         }
         NotificationCenter.default.post(name: NSNotification.Name(rawValue: "writePlaceToDB"), object: nil)
         print(". writePlaceToDB \(Thread.current)")
@@ -118,14 +191,18 @@ class Api {             // пока не используется, функци�
             realm.add(icon, update: true)
         }
         //        semaphoreFindPlaces.signal()
-        print(". writeIconToDB \(Thread.current)")
+//        print(". writeIconToDB \(Thread.current)")
     }
     func clearResultsDB() {
         let realm = try! Realm()
-        let removeData = realm.objects(PlacesData.self)     // очищаем результаты поиска перед запоминанием новых результатов поиска
+        let removeData = realm.objects(PlacesData.self)
         try! realm.write {
             realm.delete(removeData)
         }
+        DispatchQueue.main.async {
+            Api.sharedApi.getPlacesDataFromDB()
+        }
+        NotificationCenter.default.post(name: NSNotification.Name(rawValue: "writePlaceToDB"), object: nil)
         print(". clearResultsDB \(Thread.current)")
     }
 
@@ -178,15 +255,71 @@ class Api {             // пока не используется, функци�
         try! realm.write {
             realm.delete(data)
         }
-        
+    }
+// чистит favorits от находящихся там заведения но со снятой отметкой fav
+    func clearFavoritsDB() {
+        let realm = try! Realm()
+        let data = realm.objects(FavoritsData.self).filter("favorit == false")
+        try! realm.write {
+            realm.delete(data)
+        }
     }
     
     func isFavorit(place_id: String) -> Bool{
         let realm = try! Realm()
-        if realm.objects(FavoritsData.self).filter("place_id BEGINSWITH %@", place_id).count > 0 {
+        if realm.objects(FavoritsData.self).filter("place_id BEGINSWITH %@ AND favorit == true", place_id).count > 0 {
             return true
         } else {
             return false
+        }
+    }
+    
+    func makeFavorit(place_id: String) {
+        let realm = try! Realm()
+        if realm.objects(FavoritsData.self).filter("place_id BEGINSWITH %@", place_id).count > 0 {
+            if realm.objects(FavoritsData.self).filter("place_id BEGINSWITH %@ AND favorit == true", place_id).count > 0 {
+                let data = realm.objects(FavoritsData.self).filter("place_id BEGINSWITH %@", place_id)
+                let newdata = FavoritsData()
+                newdata.place_name = data[0].place_name
+                newdata.place_id = data[0].place_id
+                newdata.place_icon = data[0].place_icon
+                newdata.raiting = data[0].raiting
+                newdata.price_level = data[0].price_level
+                newdata.latLng = data[0].latLng
+                newdata.address = data[0].address
+                newdata.favorit = false
+                try! realm.write {
+                    realm.add(newdata, update: true)
+                }
+            } else {
+                let data = realm.objects(FavoritsData.self).filter("place_id BEGINSWITH %@", place_id)
+                let newdata = FavoritsData()
+                newdata.place_name = data[0].place_name
+                newdata.place_id = data[0].place_id
+                newdata.place_icon = data[0].place_icon
+                newdata.raiting = data[0].raiting
+                newdata.price_level = data[0].price_level
+                newdata.latLng = data[0].latLng
+                newdata.address = data[0].address
+                newdata.favorit = true
+                try! realm.write {
+                    realm.add(newdata, update: true)
+                }
+            }
+        }else{
+            let data = realm.objects(PlacesData.self).filter("place_id BEGINSWITH %@", place_id)
+            let newdata = FavoritsData()
+            newdata.place_name = data[0].place_name
+            newdata.place_id = data[0].place_id
+            newdata.place_icon = data[0].place_icon
+            newdata.raiting = data[0].raiting
+            newdata.price_level = data[0].price_level
+            newdata.latLng = data[0].latLng
+            newdata.address = data[0].address
+            newdata.favorit = true
+            try! realm.write {
+                realm.add(newdata, update: true)
+            }
         }
     }
     
@@ -203,7 +336,7 @@ class Api {             // пока не используется, функци�
         
         Alamofire.download(downloadLink, to: destination)
             .downloadProgress { progress in
-                print("Download Progress: \(progress.fractionCompleted) --- \(Thread.current)")
+//                print("Download Progress: \(progress.fractionCompleted) --- \(Thread.current)")
             }
             .responseData(queue: concurrentQueue) { response in
                 if response.result.value != nil {

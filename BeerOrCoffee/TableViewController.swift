@@ -33,16 +33,15 @@ class TableViewController: UITableViewController {
         self.tableView.backgroundView = imageView
         
         
-        
         print(Realm.Configuration.defaultConfiguration.fileURL as Any)
         
  // ищем каждый раз
         
-        print("1. start find places \(Thread.current)")
-        print(self.api.findPlaces(type: self.searchType, lat: self.lat, lng: self.lng))
+//        print("1. start find places \(Thread.current)")
+        
+        print(Api.sharedApi.findPlaces(type: self.searchType, lat: self.lat, lng: self.lng))
         
         NotificationCenter.default.addObserver(self, selector: #selector(refreshTableView), name: NSNotification.Name(rawValue: "writePlaceToDB"), object: nil)
-        
         
 //------------------- Работает через реалм нотификацию -------------------
 // ищем каждый раз
@@ -58,8 +57,11 @@ class TableViewController: UITableViewController {
     }
     
     func refreshTableView() {
-        self.classPlace = self.api.loadClassPlacesListDB()
-        DispatchQueue.main.sync {
+//        self.classPlace = self.api.loadClassPlacesListDB()
+        
+        print("refresh   \(Thread.current)")
+        DispatchQueue.main.async {
+//            Api.sharedApi.getPlacesDataFromDB()
             self.tableView.reloadData()
         }
     }
@@ -69,16 +71,21 @@ class TableViewController: UITableViewController {
     }
     
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return classPlace.count
+//        return classPlace.count
+        print("Api.sharedApi.placesData.count:  \(Api.sharedApi.placesData.count)")
+        return Api.sharedApi.placesData.count
     }
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath)
-        cell.textLabel?.text = classPlace[indexPath.row].name
-        if classPlace[indexPath.row].rating == "" {
+//        cell.textLabel?.text = classPlace[indexPath.row].name
+        cell.textLabel?.text = Api.sharedApi.placesData[indexPath.row].place_name
+//        cell.textLabel?.text = ManagerData.sharedManager.weatherData[indexPath.row].city_name
+        if Api.sharedApi.placesData[indexPath.row].raiting == "" {
             cell.detailTextLabel?.text = "Raiting: -"
         } else {
-            cell.detailTextLabel?.text = "Raiting: " + classPlace[indexPath.row].rating
+//            cell.detailTextLabel?.text = "Raiting: " + classPlace[indexPath.row].rating
+            cell.detailTextLabel?.text = "Raiting: " + Api.sharedApi.placesData[indexPath.row].raiting
         }
         cell.backgroundColor = .clear
         return cell
@@ -88,52 +95,15 @@ class TableViewController: UITableViewController {
         if segue.identifier == "details" {
             if let indexPath = tableView.indexPathForSelectedRow {
                 let destinationVC = segue.destination as! DetailsViewController
-                destinationVC.place = classPlace[indexPath.row]
+//                destinationVC.place = classPlace[indexPath.row]
+                destinationVC.index = indexPath.row
+                destinationVC.from = "fromDetails"
             }
             
         }
     }
     
-    
-    
-/*
-    func findPlaces() {
-        let apikey = "AIzaSyBzfEMMl1BGXGoLngcVuEdu2HvOGTMVT48"
-        let latlng = "55.761704,37.620350"
-        let radius = "150"
-        let rankby = "distance"
-        let placeType = "bar"
-        let language = "ru"
-        
-        let urlByRadius = "https://maps.googleapis.com/maps/api/place/nearbysearch/json?location="+latlng+"&radius="+radius+"&opennow=true&type="+placeType+"&language="+language+"&key=" + apikey
-        let urlByDistance = "https://maps.googleapis.com/maps/api/place/nearbysearch/json?location="+latlng+"&rankby="+rankby+"&opennow=true&type="+placeType+"&language="+language+"&key=" + apikey
-        
-        Alamofire.request(urlByDistance, method: .get).validate().responseJSON { response in
-            switch response.result{
-            case .success(let value):
-                let json = JSON(value)
-                if json["status"].stringValue == "OK" {
-                    cityList.remove(at: 0)
-                    for (key,place):(String, JSON) in json["results"] {
-                        print(key, " ", place["name"].stringValue)
-                        cityList.append((name: place["name"].stringValue, rating: place["rating"].stringValue, priceLevel: place["price_level"].stringValue, latLng: place["geometry"]["location"]["lat"].stringValue+","+place["geometry"]["location"]["lng"].stringValue, address: place["vicinity"].stringValue))
-                        print("     Rating: ", place["rating"].stringValue)
-                        print("     Price Level: ", place["price_level"].stringValue)   // не везде есть
-                        print("     LatLng: ", place["geometry"]["location"]["lat"].stringValue, ",", place["geometry"] ["location"]["lng"].stringValue)
-                        print("     Адрес: ", place["vicinity"].stringValue)
-                    }
-                    print("Num of Res: \(json["results"].count)")
-                    self.tableView.reloadData()
-                }
-                print("Json ResponseResult: \(json)")
-            case .failure(let error):
-                print(error)
-            }
-        }
-    }
-*/
-    
-    
+   
     
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()

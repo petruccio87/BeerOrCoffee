@@ -14,6 +14,7 @@ class SearchViewController: UIViewController, CLLocationManagerDelegate {
     @IBOutlet weak var segmentedControl: UISegmentedControl!
     @IBOutlet weak var label: UILabel!
     
+
     var searchType = "Bar"      // передается аргументом в функцию поиска
     
     var locationManager:CLLocationManager!
@@ -58,7 +59,7 @@ determineMyCurrentLocation()
         if segue.identifier == "search" {
             let destinationVC = segue.destination as! TableViewController
             destinationVC.searchType = searchType
-            destinationVC.lat = lat
+            destinationVC.lat = lat         // надо убрать - заменены на глобальные переменные
             destinationVC.lng = lng
         }
     }
@@ -98,6 +99,7 @@ determineMyCurrentLocation()
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         // Hide the navigation bar for current view controller
+        Api.sharedApi.clearResultsDB()
         self.navigationController?.isNavigationBarHidden = true;
     }
     
