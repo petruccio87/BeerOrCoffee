@@ -10,7 +10,8 @@ import UIKit
 
 class DZ_3Image_ViewController: UIViewController {
 
-    let urls : [String] = ["http://www.avtorinok.ru/photo/BMW_X5_M_pic_137239.jpg",
+    let urls : [String] = ["https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference=CmRaAAAAcAlNkhrzptTYlLsal-zUFgqah7jqeYfVn5eWBFOEN-5OTuwq2ZlC0_aerC_f7MGp0zFGUL-apaaXU6bMQ2fzMHPauo6xAzPHcZPKs5nNUUCVPAzIlFO1f3LICWkl86DVEhDAmJJWNiOllxClKSt-Ey0nGhTjjrds37yb6xsr8akFT6yYjTJ_DA&key=AIzaSyBzfEMMl1BGXGoLngcVuEdu2HvOGTMVT48",
+                            "http://www.avtorinok.ru/photo/BMW_X5_M_pic_137239.jpg",
                            "https://imagecdn3.luxnet.ua/tv24/resources/photos/news/640x480_DIR/201707/845508.jpg",
                            "http://www.wlsa.com.au/wp-content/uploads/2017/03/WLSA-kayaking2.jpg",
                            "https://smart-lab.ru/uploads/images/00/18/53/2015/07/21/e61bf2.jpg"]

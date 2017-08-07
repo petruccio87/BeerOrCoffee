@@ -11,11 +11,13 @@ import UIKit
 import RealmSwift
 import GoogleMaps
 
-class DetailsViewController: UIViewController {
+class DetailsViewController: UIViewController, UICollectionViewDataSource, UICollectionViewDelegate {
     
     @IBOutlet weak var mapView: GMSMapView!
-//    var mapView:GMSMapView?
+    @IBOutlet weak var collectionView: UICollectionView!
     
+    var notificationToken: NotificationToken? = nil
+    let realm = try! Realm()
     
 //    var place = Place()
     var index: Int =  -1
@@ -24,10 +26,15 @@ class DetailsViewController: UIViewController {
     var place_id : String = ""
     var markerTitle : String = ""
     var markerSnippet : String = ""
+    var photos : [UIImage] = []
 //    let api : Api = Api()
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        collectionView.delegate = self
+        collectionView.dataSource = self
+        
+        
         
         let nameLabel : UILabel = self.view.viewWithTag(1) as! UILabel
         let ratingLabel : UILabel = self.view.viewWithTag(2) as! UILabel
@@ -36,6 +43,11 @@ class DetailsViewController: UIViewController {
         let addressLabel : UILabel = self.view.viewWithTag(5) as! UILabel
         let favButton : UIButton = self.view.viewWithTag(6) as! UIButton
         // Do any additional setup after loading the view.
+        
+        notificationToken = realm.addNotificationBlock {notification, realm in
+            Api.sharedApi.getPhotoDataFromDB(place_id: self.place_id)
+            self.collectionView.reloadData()
+        }
         
         
         if from == "fromDetails"{
@@ -58,6 +70,34 @@ class DetailsViewController: UIViewController {
             markerTitle = Api.sharedApi.favPlacesData[index].place_name
             markerSnippet = Api.sharedApi.favPlacesData[index].address
             place_id = Api.sharedApi.favPlacesData[index].place_id
+        }
+        
+//        Api.sharedApi.findPlaceInfo(place_id: place_id)
+        concurrentQueue.async {
+            if Api.sharedApi.photoData.count == 0 {
+                Api.sharedApi.findPlaceInfo(place_id: self.place_id)
+                Api.sharedApi.getPhotoDataFromDB(place_id: self.place_id)
+                for index in Api.sharedApi.photoData {
+                    concurrentQueue.sync {
+                        let image = Api.sharedApi.loadPhoto(url: index.place_photo)
+                        self.photos.append(image)
+                        DispatchQueue.main.async {
+                            self.collectionView.reloadData()
+                        }
+                    }
+                }
+            } else {
+                Api.sharedApi.getPhotoDataFromDB(place_id: self.place_id)
+                for index in Api.sharedApi.photoData {
+                    concurrentQueue.sync {
+                        let image = Api.sharedApi.loadPhoto(url: index.place_photo)
+                        self.photos.append(image)
+                        DispatchQueue.main.async {
+                            self.collectionView.reloadData()
+                        }
+                    }
+                }
+            }
         }
         
         if Api.sharedApi.isFavorit(place_id: place_id) {
@@ -89,10 +129,39 @@ class DetailsViewController: UIViewController {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
+    
+// ------- collection view -----------------
+    func numberOfSections(in collectionView: UICollectionView) -> Int {
+        return 1
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+//        Api.sharedApi.getPhotoDataFromDB(place_id: self.place_id)
+//        print("количествое картинок - ", Api.sharedApi.photoData.count)
+//        return Api.sharedApi.photoData.count
+        
+        print("количествое картинок - ", photos.count)
+        return photos.count
+        
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "cell", for: indexPath)
+        let imageView: UIImageView = cell.viewWithTag(7) as! UIImageView
+//        let image = Api.sharedApi.loadPhoto(url: Api.sharedApi.photoData[indexPath.row].place_photo)
+        let image = photos[indexPath.row]
+        imageView.image = image
+//        imageView.image = UIImage(named: ManagerData.sharedManager.weatherData[index].tempList[indexPath.row].icon)
+//        imageView.image = UIImage(named: "star_false")
+        
+
+
+        return cell
+    }
+// -----------------------------------------
 
 // кнопка favorit- добавляет в базу любимых, если заведения там нет, и удаляет из базы любимых, если оно там есть.
     @IBAction func favorit(_ sender: UIButton) {
-//        Api.sharedApi.makeFavorit(place_id: Api.sharedApi.placesData[index].place_id)
         Api.sharedApi.makeFavorit(place_id: place_id)
         if from == "fromDetails" {
             viewDidLoad()
@@ -134,12 +203,22 @@ class DetailsViewController: UIViewController {
 //    }
         
         
-        let alert = UIAlertController(title: "Alert", message: "test Alert", preferredStyle: .actionSheet)
+        let alert = UIAlertController(title: "Alert", message: "test Alert", preferredStyle: .alert)
         let actionOK = UIAlertAction(title: "Ok", style: .default, handler: nil)
         alert.addAction(actionOK)
         self.present(alert, animated: true, completion: nil)
     }
     
+    func backAction(){
+        //print("Back Button Clicked")
+        dismiss(animated: true, completion: nil)
+    }
+    
+    
+    
+    deinit {
+        notificationToken?.stop()
+    }
 
     
     /*

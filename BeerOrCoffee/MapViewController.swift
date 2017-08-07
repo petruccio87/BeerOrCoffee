@@ -58,7 +58,7 @@ class MapViewController: UIViewController {
                 marker.title = place.place_name
                 marker.snippet = place.address
                 marker.map = mapView
-                print("added marker \(marker) -- \(latLng[0]) -- \(latLng[1])")
+//                print("added marker \(marker) -- \(latLng[0]) -- \(latLng[1])")
             }
             for place in Api.sharedApi.favPlacesData {
                 let marker = GMSMarker()
@@ -67,7 +67,7 @@ class MapViewController: UIViewController {
                 marker.title = place.place_name
                 marker.snippet = place.address
                 marker.map = mapView
-                print("added marker \(marker.title ?? "title") -- \(Thread.current)")
+//                print("added marker \(marker.title ?? "title") -- \(Thread.current)")
             }
 //            self.classPlace = self.api.loadClassPlacesListDB()
 //            for place in self.classPlace {

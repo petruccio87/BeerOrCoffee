@@ -99,7 +99,7 @@ determineMyCurrentLocation()
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         // Hide the navigation bar for current view controller
-        Api.sharedApi.clearResultsDB()
+//        Api.sharedApi.clearResultsDB()
         self.navigationController?.isNavigationBarHidden = true;
     }
     

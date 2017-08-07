@@ -20,7 +20,7 @@ let serialQueue = DispatchQueue(label: "serial_queue")
 private let _sharedApi = Api()
 
 class Api {
-    
+
     //    --------------------------------------------
     //    singltone
     
@@ -49,6 +49,16 @@ class Api {
         
         return favPlacesDataCopy
     }
+    private var _photoData: [PhotosData] = []
+    
+    var photoData: [PhotosData] {
+        var photoDataCopy: [PhotosData]!
+        concurrentQueue.sync {
+            photoDataCopy = self._photoData
+        }
+        
+        return photoDataCopy
+    }
     //    --------------------------------------------
     //    data from DB
     func getPlacesDataFromDB() {
@@ -59,6 +69,11 @@ class Api {
         let realm = try! Realm()
         self._favPlacesData = Array(realm.objects(FavoritsData.self).filter("favorit == true"))
         //        print(self._placesData)
+    }
+    func getPhotoDataFromDB(place_id: String) {
+        let realm = try! Realm()
+        print("getPhotoData - id - \(place_id)")
+        self._photoData = Array(realm.objects(PhotosData.self).filter("place_id == %@", place_id))
     }
     //--------------------------------------------
 //    fileprivate var _placeList: [Place] = []
@@ -85,13 +100,10 @@ class Api {
     
     func findPlaces(type: String, lat: Double, lng: Double) {
         
-        
+        autoreleasepool{
 //        concurrentQueue.sync {
-//        concurrentQueue.async {
-////
-//                Api.sharedApi.clearResultsDB()        //не знаю в каком месте очищать чтобы все не падало
-////
-//        }
+        concurrentQueue.async {
+       
         
 //        print("1. INSIDE start findplaces \(Thread.current)")
 //        let ft = FilesTasks()       //  по сути не нужен. Просто задание с файлами в домашке
@@ -116,7 +128,7 @@ class Api {
         
         let urlByRadius = "https://maps.googleapis.com/maps/api/place/nearbysearch/json?location="+latlng+"&radius="+radius+"&opennow=true&type="+placeType+"&language="+language+"&key=" + apikey
         let urlByDistance = "https://maps.googleapis.com/maps/api/place/nearbysearch/json?location="+latlng+"&rankby="+rankby+"&opennow=true&type="+placeType+"&language="+language+"&key=" + apikey
-//        self.clearResultsDB()
+
         Alamofire.request(urlByDistance, method: .get).validate().responseJSON(queue: concurrentQueue) { response in
             switch response.result{
             case .success(let value):
@@ -124,10 +136,7 @@ class Api {
                 
                 let json = JSON(value)
                 if json["status"].stringValue == "OK" {
-                    
-                    
-                    
-                    
+                    var placeDataArray : [PlacesData] = []
                     for (key,place):(String, JSON) in json["results"] {
                         let placeData = PlacesData()
                         
@@ -136,6 +145,10 @@ class Api {
 //                        print("     Price Level: ", place["price_level"].stringValue)   // не везде есть
 //                        print("     LatLng: ", place["geometry"]["location"]["lat"].stringValue, ",", place["geometry"] ["location"]["lng"].stringValue)
 //                        print("     Адрес: ", place["vicinity"].stringValue)
+                        
+                        concurrentQueue.async {
+                            Api.sharedApi.findPlaceInfo(place_id: place["place_id"].stringValue)
+                        }
                         
                         placeData.place_name = place["name"].stringValue
                         placeData.place_id = place["place_id"].stringValue
@@ -146,13 +159,15 @@ class Api {
                         placeData.address = place["vicinity"].stringValue
                        // placeData.favorit = false
                        
-                        self.writePlaceToDB(data: placeData)
+                        placeDataArray.append(placeData)
+//                        self.writePlaceToDB(data: placeData)      // когда добавляли по одному а не массивом
                         
                         
                         self.downloadIcon(downloadLink: place["icon"].stringValue, typeIcon: placeType)
 //                        contentToFile += place["name"].stringValue+"\n"
                     
                     }
+                    self.writePlaceToDB(data: placeDataArray)
                   //  print("Num of Res: \(json["results"].count)")
                     
 //              дз про работу с файлами - в принципе не нужно.
@@ -171,19 +186,61 @@ class Api {
             print("3. INSIDE Alomofire - the end \(Thread.current)")
             
         }
-//    }   // end concurentQueue
+    }   // end concurentQueue
+    }   // autorelease
+    }
+ // загружает инфо о заведении - пока что только ссылки на фотки
+    func findPlaceInfo(place_id: String) {
+//        Api.sharedApi.clearPhotosDB()
+        autoreleasepool{
+        concurrentQueue.async {
+        
+        let urlToFind = "https://maps.googleapis.com/maps/api/place/details/json?placeid=\(place_id)&key=\(apikey)"
+        Alamofire.request(urlToFind, method: .get).validate().responseJSON(queue: concurrentQueue) { response in
+            switch response.result{
+            case .success(let value):
+                let json = JSON(value)
+                if json["status"].stringValue == "OK" {
+                    var photoDataArray : [PhotosData] = []
+                    for (key,place):(String, JSON) in json["result"]["photos"] {
+                        let photoData = PhotosData()
+                        photoData.place_id = place_id
+                        photoData.place_photo = place["photo_reference"].stringValue
+                        
+                        print("\(key) - photo")
+                        
+                        photoDataArray.append(photoData)
+//                        self.writePhotoToDB(data: photoData)      // когда добавляли по одному а не массивом
+   
+                    }
+                    self.writePhotoToDB(data: photoDataArray)
+                }
+            //print("Json ResponseResult: \(json)")
+            case .failure(let error):
+                print(error)
+            }
+        }
+        }   // concurrent
+        }      // autorelease
     }
 
-    func writePlaceToDB(data: PlacesData) {
+    func writePlaceToDB(data: [PlacesData]) {
         let realm = try! Realm()
         try! realm.write {
             realm.add(data, update: true)
         }
-        DispatchQueue.main.async {
-                        Api.sharedApi.getPlacesDataFromDB()
+//        DispatchQueue.main.async {
+//                        Api.sharedApi.getPlacesDataFromDB()
+//        }
+//        NotificationCenter.default.post(name: NSNotification.Name(rawValue: "writePlaceToDB"), object: nil)
+//        print(". writePlaceToDB \(Thread.current)")
+    }
+    func writePhotoToDB(data: [PhotosData]) {
+        let realm = try! Realm()
+        try! realm.write {
+            realm.add(data, update: true)
         }
-        NotificationCenter.default.post(name: NSNotification.Name(rawValue: "writePlaceToDB"), object: nil)
-        print(". writePlaceToDB \(Thread.current)")
+        print(". writePhotoToDB \(Thread.current)")
     }
     func writeIconToDB(icon: IconsData) {
         let realm = try! Realm()
@@ -199,11 +256,19 @@ class Api {
         try! realm.write {
             realm.delete(removeData)
         }
-        DispatchQueue.main.async {
-            Api.sharedApi.getPlacesDataFromDB()
-        }
-        NotificationCenter.default.post(name: NSNotification.Name(rawValue: "writePlaceToDB"), object: nil)
+//        DispatchQueue.main.async {
+//            Api.sharedApi.getPlacesDataFromDB()
+//        }
+//        NotificationCenter.default.post(name: NSNotification.Name(rawValue: "writePlaceToDB"), object: nil)
         print(". clearResultsDB \(Thread.current)")
+    }
+    func clearPhotosDB() {
+        let realm = try! Realm()
+        let removeData = realm.objects(PhotosData.self)
+        try! realm.write {
+            realm.delete(removeData)
+        }
+        print(". clearPhotosDB \(Thread.current)")
     }
 
 // возвращает ВСЕ данные из базы
@@ -349,6 +414,29 @@ class Api {
                     self.writeIconToDB(icon: icon)
                 }
         }
+    }
+    
+    func loadPhoto(url: String) -> UIImage {
+        var image = UIImage()
+        var imageData: Data?
+        let tmpurl = "https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference=\(url)&key=\(apikey)"
+        let url1 = URL(string: tmpurl)
+        concurrentQueue.sync() {            // нельзя async - вернет пустоту
+            print("1. start LOAD image\(Thread.current)")
+            do {
+                imageData = try  Data(contentsOf: url1!)
+//                print("2. dataload \(imageData)")
+            } catch{
+                print("error")
+            }
+            if let value =  imageData{
+                image = UIImage(data: value)!
+//                print("3. image \(image)")
+            }
+            
+        }
+        print("4. return END IMAGE \(image)")
+        return image
     }
     
 

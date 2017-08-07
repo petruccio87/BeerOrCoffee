@@ -39,6 +39,15 @@ class FavoritsData: Object {
     }
 }
 
+class PhotosData: Object {
+    dynamic var place_id: String = ""
+    dynamic var place_photo: String = ""
+    
+    override static func primaryKey() -> String? {
+        return "place_photo"
+    }
+}
+
 class IconsData: Object {
     dynamic var icon_type: String = ""
     dynamic var icon_url: String = ""
