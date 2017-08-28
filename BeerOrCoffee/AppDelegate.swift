@@ -42,6 +42,40 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func applicationWillTerminate(_ application: UIApplication) {
         // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
     }
+    
+    func application(_ application: UIApplication, performFetchWithCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void) {
+        
+        print("Update placesData from background \(Date())")
+        if lastUpdate != nil && abs(lastUpdate!.timeIntervalSinceNow) < 30 {
+            print("Update cancel (last update less then 30 sec)")
+            completionHandler(.noData)
+            return
+        }
+//        func complite() {
+//            
+//        }
+        
+        
+        timer = DispatchSource.makeTimerSource(queue: DispatchQueue.main)
+        timer?.scheduleRepeating(deadline: .now(), interval: .seconds(29), leeway: .seconds(1))
+        timer?.setEventHandler {
+            print("Error (to long data load in background)")
+            completionHandler(.failed)
+            return
+        }
+        timer?.resume()
+        
+        Api.sharedApi.clearResultsDB()
+        Api.sharedApi.clearPhotosDB()
+        print(Api.sharedApi.findPlaces(type: searchType, lat: lat, lng: lng))
+        
+        print("Update placesData complite")
+        lastUpdate = Date()
+        timer = nil
+        completionHandler(.newData)
+        return
+        
+    }
 
 
 }
@@ -49,3 +83,4 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 let apikey = "AIzaSyBzfEMMl1BGXGoLngcVuEdu2HvOGTMVT48"
 var lat : Double = 0
 var lng : Double = 0    // текущие координаты устройства
+var searchType = "Bar"

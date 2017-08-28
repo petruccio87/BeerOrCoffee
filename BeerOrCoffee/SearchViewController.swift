@@ -15,7 +15,7 @@ class SearchViewController: UIViewController, CLLocationManagerDelegate {
     @IBOutlet weak var label: UILabel!
     
 
-    var searchType = "Bar"      // передается аргументом в функцию поиска
+//    var searchType = "Bar"      // передается аргументом в функцию поиска - перенесенов appdelegate для публичного доступа
     
     var locationManager:CLLocationManager!
     
@@ -70,7 +70,8 @@ determineMyCurrentLocation()
         locationManager = CLLocationManager()
         locationManager.delegate = self
         locationManager.desiredAccuracy = kCLLocationAccuracyNearestTenMeters
-        locationManager.requestWhenInUseAuthorization()
+//        locationManager.requestWhenInUseAuthorization()
+        locationManager.requestAlwaysAuthorization()
         
         if CLLocationManager.locationServicesEnabled() {
             locationManager.startUpdatingLocation()
@@ -86,8 +87,8 @@ determineMyCurrentLocation()
         // manager.stopUpdatingLocation()
         lat = userLocation.coordinate.latitude
         lng = userLocation.coordinate.longitude
-//        print("My Lat = \(userLocation.coordinate.latitude)")
-//        print("My Lng = \(userLocation.coordinate.longitude)")
+        print("My Lat = \(userLocation.coordinate.latitude)")
+        print("My Lng = \(userLocation.coordinate.longitude)")
     }
     
     func locationManager(_ manager: CLLocationManager, didFailWithError error: Error)

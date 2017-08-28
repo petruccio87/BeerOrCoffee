@@ -16,6 +16,9 @@ class DetailsViewController: UIViewController, UICollectionViewDataSource, UICol
     @IBOutlet weak var mapView: GMSMapView!
     @IBOutlet weak var collectionView: UICollectionView!
     
+    @IBOutlet weak var scrollView: UIScrollView!
+    
+    
     var notificationToken: NotificationToken? = nil
     let realm = try! Realm()
     
@@ -33,6 +36,7 @@ class DetailsViewController: UIViewController, UICollectionViewDataSource, UICol
         super.viewDidLoad()
         collectionView.delegate = self
         collectionView.dataSource = self
+        scrollView.contentSize = CGSize(width: self.view.frame.size.width, height: 750)
         
         
         

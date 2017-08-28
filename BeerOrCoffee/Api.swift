@@ -15,7 +15,7 @@ import SwiftyJSON
 //var semaphoreFindPlaces = DispatchSemaphore(value: 0) // создаем семафор
 let concurrentQueue = DispatchQueue(label: "concurrent_queue", attributes: .concurrent)
 let serialQueue = DispatchQueue(label: "serial_queue")
-
+var timer: DispatchSourceTimer? // таймер для бэкграунда - чтобы не ждать слишком долго загрузки данных
 
 private let _sharedApi = Api()
 
@@ -453,5 +453,14 @@ var load: AnyObject? {
         UserDefaults.standard.synchronize()
     }
     
+}
+// время последнего обновления в бэкграунде
+var lastUpdate: Date? {
+    get {
+        return UserDefaults.standard.object(forKey: "Last Update") as? Date
+    }
+    set {
+        UserDefaults.standard.setValue(Date(), forKey: "Last Update")
+    }
 }
 
