@@ -36,7 +36,7 @@ class DetailsViewController: UIViewController, UICollectionViewDataSource, UICol
         super.viewDidLoad()
         collectionView.delegate = self
         collectionView.dataSource = self
-        scrollView.contentSize = CGSize(width: self.view.frame.size.width, height: 750)
+        scrollView.contentSize = CGSize(width: self.view.frame.size.width, height: 1800)
         
         
         
