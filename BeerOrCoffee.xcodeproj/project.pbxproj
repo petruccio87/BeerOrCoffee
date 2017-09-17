@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		102513FA1F642B8700BED37B /* TabBarController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 102513F91F642B8700BED37B /* TabBarController.swift */; };
+		102513FC1F6432AF00BED37B /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 102513FB1F6432AF00BED37B /* GoogleService-Info.plist */; };
 		104DEE6F1F1DEE71000E5B0A /* SearchViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 104DEE6E1F1DEE71000E5B0A /* SearchViewController.swift */; };
 		104DEE711F1E511B000E5B0A /* Place.swift in Sources */ = {isa = PBXBuildFile; fileRef = 104DEE701F1E511B000E5B0A /* Place.swift */; };
 		104DEE741F23867C000E5B0A /* FileTasks.swift in Sources */ = {isa = PBXBuildFile; fileRef = 104DEE731F23867C000E5B0A /* FileTasks.swift */; };
@@ -44,6 +46,8 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		102513F91F642B8700BED37B /* TabBarController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TabBarController.swift; sourceTree = "<group>"; };
+		102513FB1F6432AF00BED37B /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		104DEE6E1F1DEE71000E5B0A /* SearchViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SearchViewController.swift; sourceTree = "<group>"; };
 		104DEE701F1E511B000E5B0A /* Place.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Place.swift; sourceTree = "<group>"; };
 		104DEE731F23867C000E5B0A /* FileTasks.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FileTasks.swift; sourceTree = "<group>"; };
@@ -137,6 +141,8 @@
 				10AF4CC11F176BEA00F4A109 /* Assets.xcassets */,
 				10AF4CC31F176BEA00F4A109 /* LaunchScreen.storyboard */,
 				10AF4CC61F176BEA00F4A109 /* Info.plist */,
+				102513FB1F6432AF00BED37B /* GoogleService-Info.plist */,
+				102513F91F642B8700BED37B /* TabBarController.swift */,
 			);
 			path = BeerOrCoffee;
 			sourceTree = "<group>";
@@ -295,6 +301,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				10AF4CC51F176BEA00F4A109 /* LaunchScreen.storyboard in Resources */,
+				102513FC1F6432AF00BED37B /* GoogleService-Info.plist in Resources */,
 				10AF4CC21F176BEA00F4A109 /* Assets.xcassets in Resources */,
 				10AF4CC01F176BEA00F4A109 /* Main.storyboard in Resources */,
 			);
@@ -378,6 +385,7 @@
 				10FC51901F28F1990064CB78 /* DZ_3Image_ViewController.swift in Sources */,
 				10AF4D291F178D1F00F4A109 /* PlacesData.swift in Sources */,
 				104DEE711F1E511B000E5B0A /* Place.swift in Sources */,
+				102513FA1F642B8700BED37B /* TabBarController.swift in Sources */,
 				10AF4CED1F17717100F4A109 /* Api.swift in Sources */,
 				10AF4CEB1F17710C00F4A109 /* MapViewController.swift in Sources */,
 			);

@@ -8,6 +8,8 @@
 
 import UIKit
 import CoreLocation
+import Firebase
+import SwiftyJSON
 
 class SearchViewController: UIViewController, CLLocationManagerDelegate {
 
@@ -32,7 +34,21 @@ class SearchViewController: UIViewController, CLLocationManagerDelegate {
             label.text = "Bar"
         // Do any additional setup after loading the view.
         
-determineMyCurrentLocation()
+        determineMyCurrentLocation()
+        
+        // загружает из firebase обязательные любимые заведения
+        Database.database().reference().child("favorits").observe(.value, with: { snapshot in
+            if let value = snapshot.value {
+//                print(value)
+                let json = JSON(value)
+                for (key, subjson) in json {
+                    if subjson.stringValue != "" {       // первый элемент всегда null
+                        print("subjson \(key) + \(subjson.stringValue)")
+                    Api.sharedApi.loadDefaultVafInfo(place_id: subjson.stringValue)
+                    }                
+                }
+            }
+        })
     }
 
     override func didReceiveMemoryWarning() {
@@ -87,8 +103,8 @@ determineMyCurrentLocation()
         // manager.stopUpdatingLocation()
         lat = userLocation.coordinate.latitude
         lng = userLocation.coordinate.longitude
-        print("My Lat = \(userLocation.coordinate.latitude)")
-        print("My Lng = \(userLocation.coordinate.longitude)")
+//        print("My Lat = \(userLocation.coordinate.latitude)")
+//        print("My Lng = \(userLocation.coordinate.longitude)")
     }
     
     func locationManager(_ manager: CLLocationManager, didFailWithError error: Error)
@@ -101,13 +117,13 @@ determineMyCurrentLocation()
         super.viewWillAppear(animated)
         // Hide the navigation bar for current view controller
 //        Api.sharedApi.clearResultsDB()
-        self.navigationController?.isNavigationBarHidden = true;
+//        self.navigationController?.isNavigationBarHidden = true;
     }
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         // Show the navigation bar on other view controllers
-        self.navigationController?.isNavigationBarHidden = false;
+//        self.navigationController?.isNavigationBarHidden = false;
     }
     
     /*

@@ -14,8 +14,9 @@ import SwiftyJSON
 
 
 
-class TableViewController: UITableViewController {
+class TableViewController: UIViewController, UITableViewDataSource, UITableViewDelegate {
     
+    @IBOutlet weak var tableView: UITableView!
     let api : Api = Api()
     let realm = try! Realm()
     var notificationToken: NotificationToken? = nil     // нотификация realm
@@ -27,11 +28,32 @@ class TableViewController: UITableViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        tableView.delegate = self
+        tableView.dataSource = self
         // Do any additional setup after loading the view, typically from a nib.
+//        let backgroundImage = UIImage(named: "bg.png")            // для tableViewController
+//        let imageView = UIImageView(image: backgroundImage)
+//        imageView.contentMode = .scaleAspectFill
+//        self.view.backgroundView = imageView
         let backgroundImage = UIImage(named: "bg.png")
-        let imageView = UIImageView(image: backgroundImage)
-        imageView.contentMode = .scaleAspectFill
-        self.tableView.backgroundView = imageView
+        let imageViewBG = UIImageView(frame: self.view.bounds)
+        imageViewBG.image = backgroundImage
+        imageViewBG.contentMode = .scaleAspectFill
+        view.addSubview(imageViewBG)
+        view.sendSubview(toBack: imageViewBG)
+        
+        let headerView = UIView(frame: CGRect(x: 0, y: 0, width: view.frame.size.width, height: 44))
+        headerView.backgroundColor = UIColor.yellow
+        let headerTitleView = UILabel(frame: CGRect(x: headerView.center.x - 50, y: 20, width: 100, height: 20))
+        headerTitleView.text = "Results"
+        let headerBackView = UIButton(frame: CGRect(x: 5, y: 20, width: 20, height: 20))
+        headerBackView.tintColor = UIColor.blue
+        headerBackView.setTitle("<", for: .normal)
+        headerBackView.addTarget(self, action: #selector(TableViewController.goBack), for: .touchDown)
+        headerView.addSubview(headerBackView)
+        headerView.addSubview(headerTitleView)
+        self.view.addSubview(headerView)
+        
         
         
         myActivityIndicator.center = self.view.center
@@ -74,17 +96,17 @@ class TableViewController: UITableViewController {
         }
     }
     
-    override func numberOfSections(in tableView: UITableView) -> Int {
+    func numberOfSections(in tableView: UITableView) -> Int {
         return 1
     }
     
-    override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
 //        return classPlace.count
         print("Api.sharedApi.placesData.count:  \(Api.sharedApi.placesData.count)")
         return Api.sharedApi.placesData.count
     }
     
-    override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath)
 //        cell.textLabel?.text = classPlace[indexPath.row].name
         cell.textLabel?.text = Api.sharedApi.placesData[indexPath.row].place_name
@@ -118,12 +140,22 @@ class TableViewController: UITableViewController {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
-
+    
+    func goBack() {
+        dismiss(animated: true, completion: nil)
+    }
 
     deinit {
         notificationToken?.stop()       //  включить когда используется реальмовская нотификация
 //        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: "writePlaceToDB"), object: nil)
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        // Hide the navigation bar for current view controller
+        //        Api.sharedApi.clearResultsDB()
+        //        self.navigationController?.isNavigationBarHidden = true;
+        self.tabBarController?.tabBar.isHidden = false
+    }
 }
 

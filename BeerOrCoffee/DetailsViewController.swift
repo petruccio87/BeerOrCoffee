@@ -16,7 +16,11 @@ class DetailsViewController: UIViewController, UICollectionViewDataSource, UICol
     @IBOutlet weak var mapView: GMSMapView!
     @IBOutlet weak var collectionView: UICollectionView!
     
+
+
     @IBOutlet weak var scrollView: UIScrollView!
+
+
     
     
     var notificationToken: NotificationToken? = nil
@@ -37,6 +41,20 @@ class DetailsViewController: UIViewController, UICollectionViewDataSource, UICol
         collectionView.delegate = self
         collectionView.dataSource = self
         scrollView.contentSize = CGSize(width: self.view.frame.size.width, height: 1800)
+        
+        let headerView = UIView(frame: CGRect(x: 0, y: 0, width: view.frame.size.width, height: 44))
+        headerView.backgroundColor = UIColor.yellow
+        let headerTitleView = UILabel(frame: CGRect(x: headerView.center.x - 50, y: 20, width: 100, height: 20))
+        headerTitleView.text = "Details"
+        let headerBackView = UIButton(frame: CGRect(x: 5, y: 20, width: 20, height: 20))
+        headerBackView.tintColor = UIColor.blue
+        headerBackView.setTitle("<", for: .normal)
+        headerBackView.addTarget(self, action: #selector(TableViewController.goBack), for: .touchDown)
+        headerView.addSubview(headerBackView)
+        headerView.addSubview(headerTitleView)
+        self.view.addSubview(headerView)
+        
+        
         
         
         
@@ -213,12 +231,9 @@ class DetailsViewController: UIViewController, UICollectionViewDataSource, UICol
         self.present(alert, animated: true, completion: nil)
     }
     
-    func backAction(){
-        //print("Back Button Clicked")
+    func goBack() {
         dismiss(animated: true, completion: nil)
     }
-    
-    
     
     deinit {
         notificationToken?.stop()

@@ -10,4 +10,6 @@ target 'BeerOrCoffee' do
   pod 'SwiftyJSON', '~> 3.1'
   pod 'GoogleMaps', '~> 2.3'
   pod "NVHTarGzip"
+  pod 'Firebase/Core'
+  pod 'Firebase/Database'
 end

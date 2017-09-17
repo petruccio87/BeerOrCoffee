@@ -223,6 +223,44 @@ class Api {
         }   // concurrent
         }      // autorelease
     }
+    // загружает в любимые заведения указнные в firebase
+    func loadDefaultVafInfo(place_id: String) {
+        let realm = try! Realm()
+        if realm.objects(FavoritsData.self).filter("place_id BEGINSWITH %@", place_id).count == 0 {
+            autoreleasepool{
+            concurrentQueue.async {
+                Api.sharedApi.findPlaceInfo(place_id: place_id)
+                let urlToFind = "https://maps.googleapis.com/maps/api/place/details/json?placeid=\(place_id)&key=\(apikey)"
+                Alamofire.request(urlToFind, method: .get).validate().responseJSON(queue: concurrentQueue) { response in
+                    switch response.result{
+                    case .success(let value):
+                        let json = JSON(value)
+                        if json["status"].stringValue == "OK" {
+                            let placeData = FavoritsData()
+                            placeData.place_name = json["result"]["name"].stringValue
+                            placeData.place_id = json["result"]["place_id"].stringValue
+                            placeData.place_icon = json["result"]["icon"].stringValue
+                            placeData.raiting = json["result"]["rating"].stringValue
+                            placeData.price_level = json["result"]["price_level"].stringValue
+                            placeData.latLng = json["result"]["geometry"]["location"]["lat"].stringValue+","+json["result"]["geometry"]["location"]["lng"].stringValue
+                            placeData.address = json["result"]["vicinity"].stringValue
+                            placeData.favorit = true
+                            //    print(placeData)
+                            DispatchQueue.main.async {
+                                try! realm.write {
+                                    realm.add(placeData, update: true)
+                                }
+                            }
+                        }
+                    //print("Json ResponseResult: \(json)")
+                    case .failure(let error):
+                        print(error)
+                    }
+                }
+            }   // concurrent
+            }      // autorelease
+        }
+    }
 
     func writePlaceToDB(data: [PlacesData]) {
         let realm = try! Realm()
