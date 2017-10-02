@@ -45,27 +45,21 @@ class DetailsViewController: UIViewController, UICollectionViewDataSource, UICol
         scrollView.contentSize = CGSize(width: self.view.frame.size.width, height: 800)
         Api.sharedApi.getPlacesDataFromDB()
         
-        
+        // установка новых фоновых картинок
         let newName = "newbg.jpeg"
         let documentsURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
         let filePath = documentsURL.appendingPathComponent(newName).path
-        //        let filePath = url.appendingPathComponent("nameOfFileHere").path
         let fileManager = FileManager.default
         if fileManager.fileExists(atPath: filePath) {
             print("NewBG AVAILABLE")
             let backgroundImage = UIImage(named: filePath)
             imageViewBG.image = backgroundImage
             imageViewBG.contentMode = .scaleAspectFill
-//            view.addSubview(imageViewBG)
-//            view.sendSubview(toBack: imageViewBG)
         } else {
             print("NewBG NOT AVAILABLE")
             let backgroundImage = UIImage(named: "bg.png")
-//            let imageViewBG = UIImageView(frame: self.view.bounds)
             imageViewBG.image = backgroundImage
             imageViewBG.contentMode = .scaleAspectFill
-//            view.addSubview(imageViewBG)
-//            view.sendSubview(toBack: imageViewBG)
         }
         
 //        self.navigationItem.hidesBackButton = true

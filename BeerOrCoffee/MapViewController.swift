@@ -13,10 +13,9 @@ import GoogleMaps
 
 class MapViewController: UIViewController, GMSMapViewDelegate {
     
-//    let api : Api = Api()
+
     let realm = try! Realm()
     var notificationToken: NotificationToken? = nil
-//    var classPlace : [Place] = []
     var mapView: GMSMapView!
     
     struct markerData{
@@ -29,7 +28,6 @@ class MapViewController: UIViewController, GMSMapViewDelegate {
     override func viewDidLoad() {
         super.viewDidLoad()
         mapView.delegate = self
-        // Do any additional setup after loading the view.
     }
     
     override func didReceiveMemoryWarning() {
@@ -39,14 +37,15 @@ class MapViewController: UIViewController, GMSMapViewDelegate {
     
     override func loadView() {
         // Create a GMSCameraPosition that tells the map to display the
-        // coordinate -33.86,151.20 at zoom level 6.
+        // coordinates at zoom level 14.
         let camera = GMSCameraPosition.camera(withLatitude: lat, longitude: lng, zoom: 14.0)
         mapView = GMSMapView.map(withFrame: CGRect.zero, camera: camera)
         mapView.isMyLocationEnabled = true
         mapView.settings.myLocationButton = true
         view = mapView
         
-        // Creates a marker in the center of the map.
+// памятка
+// Creates a marker in the center of the map.
 //        let marker = GMSMarker()
 //        marker.position = CLLocationCoordinate2D(latitude: -33.86, longitude: 151.20)
 //        marker.title = "Sydney"
@@ -81,16 +80,9 @@ class MapViewController: UIViewController, GMSMapViewDelegate {
                 marker.userData = tmpData
 //                print("added marker \(marker.title ?? "title") -- \(Thread.current)")
             }
-//            self.classPlace = self.api.loadClassPlacesListDB()
-//            for place in self.classPlace {
-//                let marker = GMSMarker()
-//                let latLng = place.latLng.components(separatedBy: ",")
-//                marker.position = CLLocationCoordinate2D(latitude: Double(latLng[0])!, longitude: Double(latLng[1])!)
-//                marker.title = place.name
-//                marker.snippet = place.address
-//                marker.map = mapView
-//                print("added marker \(marker) -- \(latLng[0]) -- \(latLng[1])")
-
+            
+            
+// памятка
 //----------- свои иконки ----------
 //                let iconName = place.icon.components(separatedBy: "/")
 //                let documentsURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]

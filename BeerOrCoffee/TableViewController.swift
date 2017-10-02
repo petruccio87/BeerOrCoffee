@@ -21,9 +21,7 @@ class TableViewController: UIViewController, UITableViewDataSource, UITableViewD
     let realm = try! Realm()
     var notificationToken: NotificationToken? = nil     // нотификация realm
     var searchType = "Bar"  // меняется через seque
-//    var lat: Double = 0
-//    var lng: Double = 0
-//    var classPlace : [Place] = []
+
     let myActivityIndicator = UIActivityIndicatorView(activityIndicatorStyle: UIActivityIndicatorViewStyle.whiteLarge)
     
     override func viewDidLoad() {
@@ -31,15 +29,12 @@ class TableViewController: UIViewController, UITableViewDataSource, UITableViewD
         self.tabBarItem = UITabBarItem(tabBarSystemItem: UITabBarSystemItem.featured, tag: 2)
         tableView.delegate = self
         tableView.dataSource = self
-        // Do any additional setup after loading the view, typically from a nib.
-//        let backgroundImage = UIImage(named: "bg.png")            // для tableViewController
-//        let imageView = UIImageView(image: backgroundImage)
-//        imageView.contentMode = .scaleAspectFill
-//        self.view.backgroundView = imageView
+
+      
+        // установка новых фоновых картинок
         let newName = "newbg.jpeg"
         let documentsURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
         let filePath = documentsURL.appendingPathComponent(newName).path
-        //        let filePath = url.appendingPathComponent("nameOfFileHere").path
         let fileManager = FileManager.default
         if fileManager.fileExists(atPath: filePath) {
             print("NewBG AVAILABLE")
@@ -58,7 +53,8 @@ class TableViewController: UIViewController, UITableViewDataSource, UITableViewD
             view.addSubview(imageViewBG)
             view.sendSubview(toBack: imageViewBG)
         }
-        
+  
+// как памятка - не нужно
 //        let headerView = UIView(frame: CGRect(x: 0, y: 0, width: view.frame.size.width, height: 44))
 //        headerView.backgroundColor = UIColor.yellow
 //        let headerTitleView = UILabel(frame: CGRect(x: headerView.center.x - 50, y: 20, width: 100, height: 20))
@@ -80,13 +76,13 @@ class TableViewController: UIViewController, UITableViewDataSource, UITableViewD
         
         print(Realm.Configuration.defaultConfiguration.fileURL as Any)
         
- // ищем каждый раз
+ // сам поиск заведений
         
 //        print("1. start find places \(Thread.current)")
         
         if lat != 0 && lng != 0 {       // если нет координат, то и искать нечего
-            Api.sharedApi.clearResultsDB()
-            Api.sharedApi.clearPhotosDB()
+//            Api.sharedApi.clearResultsDB()
+//            Api.sharedApi.clearPhotosDB()
             print(Api.sharedApi.findPlaces(type: self.searchType, lat: lat, lng: lng))
         } else {
             let alert = UIAlertController(title: "Alert", message: "No GPS data.", preferredStyle: .alert)
@@ -95,16 +91,23 @@ class TableViewController: UIViewController, UITableViewDataSource, UITableViewD
             self.present(alert, animated: true, completion: nil)
         }
         
-        
+ // как памятка - не нужно
 //        NotificationCenter.default.addObserver(self, selector: #selector(refreshTableView), name: NSNotification.Name(rawValue: "writePlaceToDB"), object: nil)
-//        
+//    
+        //    func refreshTableView() {
+        //        DispatchQueue.main.async {[weak self] in
+        //            print("refresh   \(Thread.current)")
+        ////            Api.sharedApi.getPlacesDataFromDB()
+        //            self?.tableView.reloadData()
+        //        }
+        //    }
+
+        
 //------------------- Работает через реалм нотификацию -------------------
-// ищем каждый раз
-//        print(api.findPlaces(type: searchType, lat: lat, lng: lng))
- // загружаем все данные из базы
+ // загружаем данные из базы, при ее изменении
 //  прекрасно работает, но нам надо сделать свою нотификацию вместо реалмовской
+        
         notificationToken = realm.addNotificationBlock {notification, realm in
-//            self.classPlace = self.api.loadClassPlacesListDB()
             Api.sharedApi.getPlacesDataFromDB()
             self.tableView.reloadData()
         }
@@ -112,35 +115,22 @@ class TableViewController: UIViewController, UITableViewDataSource, UITableViewD
     
     }
     
-    func refreshTableView() {
-//        self.classPlace = self.api.loadClassPlacesListDB()
-
-        DispatchQueue.main.async {[weak self] in
-            print("refresh   \(Thread.current)")
-//            Api.sharedApi.getPlacesDataFromDB()
-            self?.tableView.reloadData()
-        }
-    }
     
     func numberOfSections(in tableView: UITableView) -> Int {
         return 1
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-//        return classPlace.count
         print("Api.sharedApi.placesData.count:  \(Api.sharedApi.placesData.count)")
         return Api.sharedApi.placesData.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath)
-//        cell.textLabel?.text = classPlace[indexPath.row].name
         cell.textLabel?.text = Api.sharedApi.placesData[indexPath.row].place_name
-//        cell.textLabel?.text = ManagerData.sharedManager.weatherData[indexPath.row].city_name
         if Api.sharedApi.placesData[indexPath.row].raiting == "" {
             cell.detailTextLabel?.text = "Raiting: -"
         } else {
-//            cell.detailTextLabel?.text = "Raiting: " + classPlace[indexPath.row].rating
             cell.detailTextLabel?.text = "Raiting: " + Api.sharedApi.placesData[indexPath.row].raiting
         }
         cell.backgroundColor = .clear
@@ -152,7 +142,6 @@ class TableViewController: UIViewController, UITableViewDataSource, UITableViewD
         if segue.identifier == "details" {
             if let indexPath = tableView.indexPathForSelectedRow {
                 let destinationVC = segue.destination as! DetailsViewController
-//                destinationVC.place = classPlace[indexPath.row]
                 destinationVC.index = indexPath.row
                 destinationVC.from = "fromDetails"
             }
@@ -166,7 +155,8 @@ class TableViewController: UIViewController, UITableViewDataSource, UITableViewD
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
-    
+
+// как памятка - не нужно
 //    func goBack() {
 //        dismiss(animated: true, completion: nil)
 //    }
@@ -174,6 +164,8 @@ class TableViewController: UIViewController, UITableViewDataSource, UITableViewD
     deinit {
         notificationToken?.stop()       //  включить когда используется реальмовская нотификация
         print("details View deinit")
+        
+// как памятка по нотификации - не нужно
 //        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: "writePlaceToDB"), object: nil)
     }
     
@@ -182,9 +174,8 @@ class TableViewController: UIViewController, UITableViewDataSource, UITableViewD
         // Hide the navigation bar for current view controller
         //        Api.sharedApi.clearResultsDB()
         //        self.navigationController?.isNavigationBarHidden = true;
-        self.tabBarController?.tabBar.isHidden = false
+
         if #available(iOS 10.0, *) {
-//            message.badge = 0
             UIApplication.shared.applicationIconBadgeNumber = 0
         } else {
             print("iOS version is to Low for LocalNotifications")

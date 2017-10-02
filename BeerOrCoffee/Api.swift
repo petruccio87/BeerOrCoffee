@@ -12,7 +12,7 @@ import Alamofire
 import RealmSwift
 import SwiftyJSON
 
-//var semaphoreFindPlaces = DispatchSemaphore(value: 0) // создаем семафор
+
 let concurrentQueue = DispatchQueue(label: "concurrent_queue", attributes: .concurrent)
 let serialQueue = DispatchQueue(label: "serial_queue")
 var timer: DispatchSourceTimer? // таймер для бэкграунда - чтобы не ждать слишком долго загрузки данных
@@ -75,7 +75,9 @@ class Api {
         print("getPhotoData - id - \(place_id)")
         self._photoData = Array(realm.objects(PhotosData.self).filter("place_id == %@", place_id))
     }
-    //--------------------------------------------
+
+// памятка
+//--------------------------------------------
 //    fileprivate var _placeList: [Place] = []
 //    
 //    var placeList: [Place]? {
@@ -101,18 +103,16 @@ class Api {
     func findPlaces(type: String, lat: Double, lng: Double) {
         
         autoreleasepool{
-//        concurrentQueue.sync {
         concurrentQueue.async {
        
-        
+// памятка
 //        print("1. INSIDE start findplaces \(Thread.current)")
 //        let ft = FilesTasks()       //  по сути не нужен. Просто задание с файлами в домашке
-        let filename = "searchResults.txt"
-        let dir = "/Documents"
-        var contentToFile = ""
+//        let filename = "searchResults.txt"
+//        let dir = "/Documents"
+//        var contentToFile = ""
 //        ft.createFile(dirname: dir, filename: filename) //домашка с файлами - не нужно
         
-        //let latlng = "55.761704,37.620350"
         let latlng = String(lat) + "," + String(lng)
         let radius = "150"
         let rankby = "distance"
@@ -214,6 +214,7 @@ class Api {
     }   // end concurentQueue
     }   // autorelease
     }
+    
  // загружает инфо о заведении - пока что только ссылки на фотки
     func findPlaceInfo(place_id: String, favorit: Bool) {
 //        Api.sharedApi.clearPhotosDB()
@@ -249,6 +250,7 @@ class Api {
         }   // concurrent
         }      // autorelease
     }
+    
     // загружает в любимые заведения указнные в firebase
     func loadDefaultVafInfo(place_id: String) {
         let realm = try! Realm()
@@ -299,6 +301,7 @@ class Api {
 //        NotificationCenter.default.post(name: NSNotification.Name(rawValue: "writePlaceToDB"), object: nil)
 //        print(". writePlaceToDB \(Thread.current)")
     }
+    
     func writePhotoToDB(data: [PhotosData]) {
         let realm = try! Realm()
         try! realm.write {
@@ -306,6 +309,7 @@ class Api {
         }
         print(". writePhotoToDB \(Thread.current)")
     }
+    
     func makeFavPhoto(place_id: String) {   // при добавлении заведения в любимые его фото надо отметить как любимые и наоборот
         let realm = try! Realm()
         let data = realm.objects(PhotosData.self).filter("place_id BEGINSWITH %@", place_id)
@@ -322,14 +326,15 @@ class Api {
         }
         print(". makeFavPhoto \(Thread.current)")
     }
+    
     func writeIconToDB(icon: IconsData) {
         let realm = try! Realm()
         try! realm.write {
             realm.add(icon, update: true)
         }
-        //        semaphoreFindPlaces.signal()
 //        print(". writeIconToDB \(Thread.current)")
     }
+    
     func clearResultsDB() {
         let realm = try! Realm()
         let removeData = realm.objects(PlacesData.self)
@@ -342,6 +347,7 @@ class Api {
 //        NotificationCenter.default.post(name: NSNotification.Name(rawValue: "writePlaceToDB"), object: nil)
         print(". clearResultsDB \(Thread.current)")
     }
+    
     func clearPhotosDB() {
         let realm = try! Realm()
         let removeData = realm.objects(PhotosData.self).filter("favorit != true")
@@ -350,48 +356,49 @@ class Api {
         }
         print(". clearPhotosDB \(Thread.current)")
     }
-
+    
+// вариант для работы через класс, а не синглтон
 // возвращает ВСЕ данные из базы
-    func loadClassPlacesListDB() -> [Place]  {
-        
-        let realm = try! Realm()
-        var classPlace : [Place] = []
-        let data = realm.objects(PlacesData.self)
-        for value in data {
-            let tmpPlace = Place()
-            tmpPlace.name = value.place_name
-            tmpPlace.place_id = value.place_id
-            tmpPlace.priceLevel = value.price_level
-            tmpPlace.rating = value.raiting
-            tmpPlace.latLng = value.latLng
-            tmpPlace.address = value.address
-            tmpPlace.favorite = value.favorit
-            tmpPlace.icon = value.place_icon
-            classPlace.append(tmpPlace)
-        }
-        return classPlace
-    }
+//    func loadClassPlacesListDB() -> [Place]  {
+//        
+//        let realm = try! Realm()
+//        var classPlace : [Place] = []
+//        let data = realm.objects(PlacesData.self)
+//        for value in data {
+//            let tmpPlace = Place()
+//            tmpPlace.name = value.place_name
+//            tmpPlace.place_id = value.place_id
+//            tmpPlace.priceLevel = value.price_level
+//            tmpPlace.rating = value.raiting
+//            tmpPlace.latLng = value.latLng
+//            tmpPlace.address = value.address
+//            tmpPlace.favorite = value.favorit
+//            tmpPlace.icon = value.place_icon
+//            classPlace.append(tmpPlace)
+//        }
+//        return classPlace
+//    }
     
 // возвращает данные об Любимых метсах (favorits)
-    func loadClassFavPlacesListDB() -> [Place]  {
-        
-        let realm = try! Realm()
-        var classPlace : [Place] = []
-        let data = realm.objects(FavoritsData.self).filter("favorit == true")
-        for value in data {
-            let tmpPlace = Place()
-            tmpPlace.name = value.place_name
-            tmpPlace.place_id = value.place_id
-            tmpPlace.priceLevel = value.price_level
-            tmpPlace.rating = value.raiting
-            tmpPlace.latLng = value.latLng
-            tmpPlace.address = value.address
-            tmpPlace.favorite = value.favorit
-            tmpPlace.icon = value.place_icon
-            classPlace.append(tmpPlace)
-        }
-        return classPlace
-    }
+//    func loadClassFavPlacesListDB() -> [Place]  {
+//        
+//        let realm = try! Realm()
+//        var classPlace : [Place] = []
+//        let data = realm.objects(FavoritsData.self).filter("favorit == true")
+//        for value in data {
+//            let tmpPlace = Place()
+//            tmpPlace.name = value.place_name
+//            tmpPlace.place_id = value.place_id
+//            tmpPlace.priceLevel = value.price_level
+//            tmpPlace.rating = value.raiting
+//            tmpPlace.latLng = value.latLng
+//            tmpPlace.address = value.address
+//            tmpPlace.favorite = value.favorit
+//            tmpPlace.icon = value.place_icon
+//            classPlace.append(tmpPlace)
+//        }
+//        return classPlace
+//    }
     
 // удаляет заведение из базы любимых
     func removePlaceFromDB(place_id: String) {
@@ -401,6 +408,7 @@ class Api {
             realm.delete(data)
         }
     }
+    
 // чистит favorits от находящихся там заведения но со снятой отметкой fav
     func clearFavoritsDB() {
         let realm = try! Realm()
@@ -547,7 +555,7 @@ class Api {
 
 
 
-// проверка запускалась ли программа раньше
+// проверка запускалась ли программа раньше, сейчас смысла нет, но на память оставим
 var load: AnyObject? {
     get {
         return UserDefaults.standard.object(forKey: "flag") as AnyObject?
@@ -558,6 +566,7 @@ var load: AnyObject? {
     }
     
 }
+
 // время последнего обновления в бэкграунде
 var lastUpdate: Date? {
     get {

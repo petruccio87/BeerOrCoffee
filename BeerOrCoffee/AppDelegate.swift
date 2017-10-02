@@ -69,10 +69,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             completionHandler(.noData)
             return
         }
-//        func complite() {
-//            
-//        }
-        
+   
         
         timer = DispatchSource.makeTimerSource(queue: DispatchQueue.main)
         timer?.scheduleRepeating(deadline: .now(), interval: .seconds(29), leeway: .seconds(1))

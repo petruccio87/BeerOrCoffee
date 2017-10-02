@@ -19,7 +19,6 @@ class SearchViewController: UIViewController, CLLocationManagerDelegate {
     @IBOutlet weak var label: UILabel!
     
 
-//    var searchType = "Bar"      // передается аргументом в функцию поиска - перенесенов appdelegate для публичного доступа
     
     var locationManager:CLLocationManager!
     
@@ -30,10 +29,10 @@ class SearchViewController: UIViewController, CLLocationManagerDelegate {
         
         label.text = "Bar"
         
+        // загрузка и установка новых фоновых картинок
         let newName = "newbg.jpeg"
         let documentsURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
         let filePath = documentsURL.appendingPathComponent(newName).path
-//        let filePath = url.appendingPathComponent("nameOfFileHere").path
         let fileManager = FileManager.default
         if fileManager.fileExists(atPath: filePath) {
             print("NewBG AVAILABLE")
@@ -120,8 +119,8 @@ class SearchViewController: UIViewController, CLLocationManagerDelegate {
         if segue.identifier == "search" {
             let destinationVC = segue.destination as! TableViewController
             destinationVC.searchType = searchType
-//            destinationVC.lat = lat         // надо убрать - заменены на глобальные переменные
-//            destinationVC.lng = lng
+            Api.sharedApi.clearResultsDB()
+            Api.sharedApi.clearPhotosDB()
         }
         if segue.identifier == "details" {  // переход к деталям заведения из local notification
             let destinationVC = segue.destination as! DetailsViewController
@@ -141,7 +140,6 @@ class SearchViewController: UIViewController, CLLocationManagerDelegate {
         
         if CLLocationManager.locationServicesEnabled() {
             locationManager.startUpdatingLocation()
-            //locationManager.startUpdatingHeading()
         }
     }
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
@@ -166,11 +164,9 @@ class SearchViewController: UIViewController, CLLocationManagerDelegate {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         // Hide the navigation bar for current view controller
-//        Api.sharedApi.clearResultsDB()
         self.navigationController?.isNavigationBarHidden = true;
         
         if #available(iOS 10.0, *) {
-//            message.badge = 0
             UIApplication.shared.applicationIconBadgeNumber = 0
         } else {
             print("iOS version is to Low for LocalNotifications")
