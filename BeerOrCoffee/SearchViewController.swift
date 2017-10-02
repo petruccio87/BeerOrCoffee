@@ -10,6 +10,8 @@ import UIKit
 import CoreLocation
 import Firebase
 import SwiftyJSON
+import UserNotifications
+
 
 class SearchViewController: UIViewController, CLLocationManagerDelegate {
 
@@ -24,15 +26,57 @@ class SearchViewController: UIViewController, CLLocationManagerDelegate {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        let backgroundImage = UIImage(named: "bg.png")
-        let imageViewBG = UIImageView(frame: self.view.bounds)
-        imageViewBG.image = backgroundImage
-        imageViewBG.contentMode = .scaleAspectFill
-        view.addSubview(imageViewBG)
-        view.sendSubview(toBack: imageViewBG)
         
-            label.text = "Bar"
-        // Do any additional setup after loading the view.
+        
+        label.text = "Bar"
+        
+        let newName = "newbg.jpeg"
+        let documentsURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
+        let filePath = documentsURL.appendingPathComponent(newName).path
+//        let filePath = url.appendingPathComponent("nameOfFileHere").path
+        let fileManager = FileManager.default
+        if fileManager.fileExists(atPath: filePath) {
+            print("NewBG AVAILABLE")
+            let backgroundImage = UIImage(named: filePath)
+            let imageViewBG = UIImageView(frame: self.view.bounds)
+            imageViewBG.image = backgroundImage
+            imageViewBG.contentMode = .scaleAspectFill
+            view.addSubview(imageViewBG)
+            view.sendSubview(toBack: imageViewBG)
+        } else {
+            print("NewBG NOT AVAILABLE")
+            let backgroundImage = UIImage(named: "bg.png")
+            let imageViewBG = UIImageView(frame: self.view.bounds)
+            imageViewBG.image = backgroundImage
+            imageViewBG.contentMode = .scaleAspectFill
+            view.addSubview(imageViewBG)
+            view.sendSubview(toBack: imageViewBG)
+        }
+        Api.sharedApi.downloadNewBG(height: String(describing: self.view.bounds.height), width: String(describing: self.view.bounds.width))
+        
+       // для today widget
+        let defaults = UserDefaults(suiteName: "group.petruccio.BeerOrCoffee")
+        if let _:String = defaults?.object(forKey: "name") as? String
+        {
+            defaults?.set("none", forKey: "name")           // если еще ничего не записано в defaults для todaywidget, то запишем none чтобы обработать этот момент в виджете
+            defaults?.set("none", forKey: "raiting")
+        }
+        defaults?.synchronize()
+        
+        if #available(iOS 10.0, *) {
+            UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound, .badge], completionHandler: { didAllow, error in
+                if let err = error {
+                    print(err)
+                }
+                if didAllow {
+                    print("get permishen succes")
+                }else {
+                    print("dont get permishen")
+                }
+            })
+        } else {
+            // Fallback on earlier versions
+        }
         
         determineMyCurrentLocation()
         
@@ -71,12 +115,18 @@ class SearchViewController: UIViewController, CLLocationManagerDelegate {
         }
     }
     
+    
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "search" {
             let destinationVC = segue.destination as! TableViewController
             destinationVC.searchType = searchType
-            destinationVC.lat = lat         // надо убрать - заменены на глобальные переменные
-            destinationVC.lng = lng
+//            destinationVC.lat = lat         // надо убрать - заменены на глобальные переменные
+//            destinationVC.lng = lng
+        }
+        if segue.identifier == "details" {  // переход к деталям заведения из local notification
+            let destinationVC = segue.destination as! DetailsViewController
+            destinationVC.index = 0
+            destinationVC.from = "fromDetails"
         }
     }
     
@@ -117,13 +167,20 @@ class SearchViewController: UIViewController, CLLocationManagerDelegate {
         super.viewWillAppear(animated)
         // Hide the navigation bar for current view controller
 //        Api.sharedApi.clearResultsDB()
-//        self.navigationController?.isNavigationBarHidden = true;
+        self.navigationController?.isNavigationBarHidden = true;
+        
+        if #available(iOS 10.0, *) {
+//            message.badge = 0
+            UIApplication.shared.applicationIconBadgeNumber = 0
+        } else {
+            print("iOS version is to Low for LocalNotifications")
+        }
     }
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         // Show the navigation bar on other view controllers
-//        self.navigationController?.isNavigationBarHidden = false;
+        self.navigationController?.isNavigationBarHidden = false;
     }
     
     /*
@@ -135,5 +192,6 @@ class SearchViewController: UIViewController, CLLocationManagerDelegate {
         // Pass the selected object to the new view controller.
     }
     */
+    
 
 }

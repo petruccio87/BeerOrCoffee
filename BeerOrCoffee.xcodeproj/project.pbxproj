@@ -9,6 +9,10 @@
 /* Begin PBXBuildFile section */
 		102513FA1F642B8700BED37B /* TabBarController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 102513F91F642B8700BED37B /* TabBarController.swift */; };
 		102513FC1F6432AF00BED37B /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 102513FB1F6432AF00BED37B /* GoogleService-Info.plist */; };
+		1031FB431F81119400CE045D /* NotificationCenter.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1031FB421F81119400CE045D /* NotificationCenter.framework */; };
+		1031FB461F81119400CE045D /* TodayViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1031FB451F81119400CE045D /* TodayViewController.swift */; };
+		1031FB491F81119500CE045D /* MainInterface.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 1031FB471F81119500CE045D /* MainInterface.storyboard */; };
+		1031FB4D1F81119500CE045D /* BeerOrCoffeeTodayExtension.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 1031FB411F81119400CE045D /* BeerOrCoffeeTodayExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		104DEE6F1F1DEE71000E5B0A /* SearchViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 104DEE6E1F1DEE71000E5B0A /* SearchViewController.swift */; };
 		104DEE711F1E511B000E5B0A /* Place.swift in Sources */ = {isa = PBXBuildFile; fileRef = 104DEE701F1E511B000E5B0A /* Place.swift */; };
 		104DEE741F23867C000E5B0A /* FileTasks.swift in Sources */ = {isa = PBXBuildFile; fileRef = 104DEE731F23867C000E5B0A /* FileTasks.swift */; };
@@ -29,6 +33,13 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		1031FB4B1F81119500CE045D /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 10AF4CAF1F176BE900F4A109 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 1031FB401F81119400CE045D;
+			remoteInfo = BeerOrCoffeeTodayExtension;
+		};
 		10AF4CCC1F176BEA00F4A109 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 10AF4CAF1F176BE900F4A109 /* Project object */;
@@ -45,9 +56,30 @@
 		};
 /* End PBXContainerItemProxy section */
 
+/* Begin PBXCopyFilesBuildPhase section */
+		1031FB511F81119500CE045D /* Embed App Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				1031FB4D1F81119500CE045D /* BeerOrCoffeeTodayExtension.appex in Embed App Extensions */,
+			);
+			name = "Embed App Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
 /* Begin PBXFileReference section */
 		102513F91F642B8700BED37B /* TabBarController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TabBarController.swift; sourceTree = "<group>"; };
 		102513FB1F6432AF00BED37B /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
+		1031FB411F81119400CE045D /* BeerOrCoffeeTodayExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = BeerOrCoffeeTodayExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		1031FB421F81119400CE045D /* NotificationCenter.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = NotificationCenter.framework; path = System/Library/Frameworks/NotificationCenter.framework; sourceTree = SDKROOT; };
+		1031FB451F81119400CE045D /* TodayViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TodayViewController.swift; sourceTree = "<group>"; };
+		1031FB481F81119500CE045D /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/MainInterface.storyboard; sourceTree = "<group>"; };
+		1031FB4A1F81119500CE045D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		1031FB521F8117E800CE045D /* BeerOrCoffee.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = BeerOrCoffee.entitlements; sourceTree = "<group>"; };
+		1031FB531F811BA000CE045D /* BeerOrCoffeeTodayExtension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = BeerOrCoffeeTodayExtension.entitlements; sourceTree = "<group>"; };
 		104DEE6E1F1DEE71000E5B0A /* SearchViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SearchViewController.swift; sourceTree = "<group>"; };
 		104DEE701F1E511B000E5B0A /* Place.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Place.swift; sourceTree = "<group>"; };
 		104DEE731F23867C000E5B0A /* FileTasks.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FileTasks.swift; sourceTree = "<group>"; };
@@ -76,6 +108,14 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		1031FB3E1F81119400CE045D /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				1031FB431F81119400CE045D /* NotificationCenter.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		10AF4CB41F176BEA00F4A109 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -101,12 +141,24 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		1031FB441F81119400CE045D /* BeerOrCoffeeTodayExtension */ = {
+			isa = PBXGroup;
+			children = (
+				1031FB531F811BA000CE045D /* BeerOrCoffeeTodayExtension.entitlements */,
+				1031FB451F81119400CE045D /* TodayViewController.swift */,
+				1031FB471F81119500CE045D /* MainInterface.storyboard */,
+				1031FB4A1F81119500CE045D /* Info.plist */,
+			);
+			path = BeerOrCoffeeTodayExtension;
+			sourceTree = "<group>";
+		};
 		10AF4CAE1F176BE900F4A109 = {
 			isa = PBXGroup;
 			children = (
 				10AF4CB91F176BEA00F4A109 /* BeerOrCoffee */,
 				10AF4CCE1F176BEA00F4A109 /* BeerOrCoffeeTests */,
 				10AF4CD91F176BEA00F4A109 /* BeerOrCoffeeUITests */,
+				1031FB441F81119400CE045D /* BeerOrCoffeeTodayExtension */,
 				10AF4CB81F176BEA00F4A109 /* Products */,
 				DD7E8CC81262148F2CF6A1EF /* Pods */,
 				82CB39A079DCC559CBEB1D41 /* Frameworks */,
@@ -119,6 +171,7 @@
 				10AF4CB71F176BEA00F4A109 /* BeerOrCoffee.app */,
 				10AF4CCB1F176BEA00F4A109 /* BeerOrCoffeeTests.xctest */,
 				10AF4CD61F176BEA00F4A109 /* BeerOrCoffeeUITests.xctest */,
+				1031FB411F81119400CE045D /* BeerOrCoffeeTodayExtension.appex */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -126,6 +179,7 @@
 		10AF4CB91F176BEA00F4A109 /* BeerOrCoffee */ = {
 			isa = PBXGroup;
 			children = (
+				1031FB521F8117E800CE045D /* BeerOrCoffee.entitlements */,
 				10AF4CBA1F176BEA00F4A109 /* AppDelegate.swift */,
 				10AF4CE81F17702C00F4A109 /* DetailsViewController.swift */,
 				104DEE701F1E511B000E5B0A /* Place.swift */,
@@ -169,6 +223,7 @@
 			isa = PBXGroup;
 			children = (
 				193195EC187BC494343DB6EB /* Pods_BeerOrCoffee.framework */,
+				1031FB421F81119400CE045D /* NotificationCenter.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -185,6 +240,23 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
+		1031FB401F81119400CE045D /* BeerOrCoffeeTodayExtension */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 1031FB501F81119500CE045D /* Build configuration list for PBXNativeTarget "BeerOrCoffeeTodayExtension" */;
+			buildPhases = (
+				1031FB3D1F81119400CE045D /* Sources */,
+				1031FB3E1F81119400CE045D /* Frameworks */,
+				1031FB3F1F81119400CE045D /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = BeerOrCoffeeTodayExtension;
+			productName = BeerOrCoffeeTodayExtension;
+			productReference = 1031FB411F81119400CE045D /* BeerOrCoffeeTodayExtension.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
 		10AF4CB61F176BEA00F4A109 /* BeerOrCoffee */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 10AF4CDF1F176BEA00F4A109 /* Build configuration list for PBXNativeTarget "BeerOrCoffee" */;
@@ -195,10 +267,12 @@
 				10AF4CB51F176BEA00F4A109 /* Resources */,
 				D332DC467BE0DB79A0A8576A /* [CP] Embed Pods Frameworks */,
 				4E6F0EDCEF5D771B4D01C21E /* [CP] Copy Pods Resources */,
+				1031FB511F81119500CE045D /* Embed App Extensions */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+				1031FB4C1F81119500CE045D /* PBXTargetDependency */,
 			);
 			name = BeerOrCoffee;
 			productName = BeerOrCoffee;
@@ -251,11 +325,24 @@
 				LastUpgradeCheck = 0830;
 				ORGANIZATIONNAME = OSX;
 				TargetAttributes = {
+					1031FB401F81119400CE045D = {
+						CreatedOnToolsVersion = 8.3.3;
+						DevelopmentTeam = M6B62L4E79;
+						ProvisioningStyle = Automatic;
+						SystemCapabilities = {
+							com.apple.ApplicationGroups.iOS = {
+								enabled = 1;
+							};
+						};
+					};
 					10AF4CB61F176BEA00F4A109 = {
 						CreatedOnToolsVersion = 8.3.3;
 						DevelopmentTeam = M6B62L4E79;
 						ProvisioningStyle = Automatic;
 						SystemCapabilities = {
+							com.apple.ApplicationGroups.iOS = {
+								enabled = 1;
+							};
 							com.apple.BackgroundModes = {
 								enabled = 1;
 							};
@@ -291,11 +378,20 @@
 				10AF4CB61F176BEA00F4A109 /* BeerOrCoffee */,
 				10AF4CCA1F176BEA00F4A109 /* BeerOrCoffeeTests */,
 				10AF4CD51F176BEA00F4A109 /* BeerOrCoffeeUITests */,
+				1031FB401F81119400CE045D /* BeerOrCoffeeTodayExtension */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
+		1031FB3F1F81119400CE045D /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				1031FB491F81119500CE045D /* MainInterface.storyboard in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		10AF4CB51F176BEA00F4A109 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -372,6 +468,14 @@
 /* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		1031FB3D1F81119400CE045D /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				1031FB461F81119400CE045D /* TodayViewController.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		10AF4CB31F176BEA00F4A109 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -410,6 +514,11 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
+		1031FB4C1F81119500CE045D /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 1031FB401F81119400CE045D /* BeerOrCoffeeTodayExtension */;
+			targetProxy = 1031FB4B1F81119500CE045D /* PBXContainerItemProxy */;
+		};
 		10AF4CCD1F176BEA00F4A109 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = 10AF4CB61F176BEA00F4A109 /* BeerOrCoffee */;
@@ -423,6 +532,14 @@
 /* End PBXTargetDependency section */
 
 /* Begin PBXVariantGroup section */
+		1031FB471F81119500CE045D /* MainInterface.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				1031FB481F81119500CE045D /* Base */,
+			);
+			name = MainInterface.storyboard;
+			sourceTree = "<group>";
+		};
 		10AF4CBE1F176BEA00F4A109 /* Main.storyboard */ = {
 			isa = PBXVariantGroup;
 			children = (
@@ -442,6 +559,34 @@
 /* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
+		1031FB4E1F81119500CE045D /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = BeerOrCoffeeTodayExtension/BeerOrCoffeeTodayExtension.entitlements;
+				DEVELOPMENT_TEAM = M6B62L4E79;
+				INFOPLIST_FILE = BeerOrCoffeeTodayExtension/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = com.petruccio.BeerOrCoffee.BeerOrCoffeeTodayExtension;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SWIFT_VERSION = 3.0;
+			};
+			name = Debug;
+		};
+		1031FB4F1F81119500CE045D /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = BeerOrCoffeeTodayExtension/BeerOrCoffeeTodayExtension.entitlements;
+				DEVELOPMENT_TEAM = M6B62L4E79;
+				INFOPLIST_FILE = BeerOrCoffeeTodayExtension/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = com.petruccio.BeerOrCoffee.BeerOrCoffeeTodayExtension;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SWIFT_VERSION = 3.0;
+			};
+			name = Release;
+		};
 		10AF4CDD1F176BEA00F4A109 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -541,7 +686,9 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 2DA184DBF22EAC67363ADACB /* Pods-BeerOrCoffee.debug.xcconfig */;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = BeerOrCoffee/BeerOrCoffee.entitlements;
 				DEVELOPMENT_TEAM = M6B62L4E79;
 				INFOPLIST_FILE = BeerOrCoffee/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 9.1;
@@ -556,7 +703,9 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = BD3AB299C0D2352AC7A5BB42 /* Pods-BeerOrCoffee.release.xcconfig */;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = BeerOrCoffee/BeerOrCoffee.entitlements;
 				DEVELOPMENT_TEAM = M6B62L4E79;
 				INFOPLIST_FILE = BeerOrCoffee/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 9.1;
@@ -628,6 +777,14 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		1031FB501F81119500CE045D /* Build configuration list for PBXNativeTarget "BeerOrCoffeeTodayExtension" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				1031FB4E1F81119500CE045D /* Debug */,
+				1031FB4F1F81119500CE045D /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+		};
 		10AF4CB21F176BEA00F4A109 /* Build configuration list for PBXProject "BeerOrCoffee" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (

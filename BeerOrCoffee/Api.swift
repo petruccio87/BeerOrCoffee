@@ -147,7 +147,11 @@ class Api {
 //                        print("     Адрес: ", place["vicinity"].stringValue)
                         
                         concurrentQueue.async {
-                            Api.sharedApi.findPlaceInfo(place_id: place["place_id"].stringValue)
+                            if Api.sharedApi.isFavorit(place_id: place["place_id"].stringValue) { // найденое заведение может уже быть в любимых - фото надо писать как fav
+                                Api.sharedApi.findPlaceInfo(place_id: place["place_id"].stringValue, favorit: true)
+                            } else {
+                                Api.sharedApi.findPlaceInfo(place_id: place["place_id"].stringValue, favorit: false)
+                            }
                         }
                         
                         placeData.place_name = place["name"].stringValue
@@ -162,7 +166,28 @@ class Api {
                         placeDataArray.append(placeData)
 //                        self.writePlaceToDB(data: placeData)      // когда добавляли по одному а не массивом
                         
-                        
+                        if key == "0" {             // если приложение обновляется в фоне, то показывает local notification и сохраняет запись в userdefaults для today widget
+                            let state: UIApplicationState = UIApplication.shared.applicationState
+                            if state == .background {
+                                if #available(iOS 10.0, *) {
+                                    sendLocalNotification(name: place["name"].stringValue, raiting: place["rating"].stringValue)
+                                } else {
+                                    // Fallback on earlier versions
+                                }
+                                let defaults = UserDefaults(suiteName: "group.petruccio.BeerOrCoffee")
+                                defaults?.set(place["name"].stringValue, forKey: "name")
+                                defaults?.set(place["rating"].stringValue, forKey: "raiting")
+                                defaults?.synchronize()
+                            }
+                            else if state == .active {
+                                // foreground
+                                let defaults = UserDefaults(suiteName: "group.petruccio.BeerOrCoffee")
+                                defaults?.set(place["name"].stringValue, forKey: "name")
+                                defaults?.set(place["rating"].stringValue, forKey: "raiting")
+                                defaults?.synchronize()
+                            }
+                        }
+                            
                         self.downloadIcon(downloadLink: place["icon"].stringValue, typeIcon: placeType)
 //                        contentToFile += place["name"].stringValue+"\n"
                     
@@ -190,7 +215,7 @@ class Api {
     }   // autorelease
     }
  // загружает инфо о заведении - пока что только ссылки на фотки
-    func findPlaceInfo(place_id: String) {
+    func findPlaceInfo(place_id: String, favorit: Bool) {
 //        Api.sharedApi.clearPhotosDB()
         autoreleasepool{
         concurrentQueue.async {
@@ -206,6 +231,7 @@ class Api {
                         let photoData = PhotosData()
                         photoData.place_id = place_id
                         photoData.place_photo = place["photo_reference"].stringValue
+                        photoData.favorit = favorit
                         
                         print("\(key) - photo")
                         
@@ -229,7 +255,7 @@ class Api {
         if realm.objects(FavoritsData.self).filter("place_id BEGINSWITH %@", place_id).count == 0 {
             autoreleasepool{
             concurrentQueue.async {
-                Api.sharedApi.findPlaceInfo(place_id: place_id)
+                Api.sharedApi.findPlaceInfo(place_id: place_id, favorit: true)
                 let urlToFind = "https://maps.googleapis.com/maps/api/place/details/json?placeid=\(place_id)&key=\(apikey)"
                 Alamofire.request(urlToFind, method: .get).validate().responseJSON(queue: concurrentQueue) { response in
                     switch response.result{
@@ -280,6 +306,22 @@ class Api {
         }
         print(". writePhotoToDB \(Thread.current)")
     }
+    func makeFavPhoto(place_id: String) {   // при добавлении заведения в любимые его фото надо отметить как любимые и наоборот
+        let realm = try! Realm()
+        let data = realm.objects(PhotosData.self).filter("place_id BEGINSWITH %@", place_id)
+        var newdata : [PhotosData] = []
+        for value in data {
+            let tmp = PhotosData()
+            tmp.place_id = value.place_id
+            tmp.favorit = !value.favorit
+            tmp.place_photo = value.place_photo
+            newdata.append(tmp)
+        }
+        try! realm.write {
+            realm.add(newdata, update: true)
+        }
+        print(". makeFavPhoto \(Thread.current)")
+    }
     func writeIconToDB(icon: IconsData) {
         let realm = try! Realm()
         try! realm.write {
@@ -302,7 +344,7 @@ class Api {
     }
     func clearPhotosDB() {
         let realm = try! Realm()
-        let removeData = realm.objects(PhotosData.self)
+        let removeData = realm.objects(PhotosData.self).filter("favorit != true")
         try! realm.write {
             realm.delete(removeData)
         }
@@ -378,6 +420,7 @@ class Api {
     }
     
     func makeFavorit(place_id: String) {
+        makeFavPhoto(place_id: place_id)
         let realm = try! Realm()
         if realm.objects(FavoritsData.self).filter("place_id BEGINSWITH %@", place_id).count > 0 {
             if realm.objects(FavoritsData.self).filter("place_id BEGINSWITH %@ AND favorit == true", place_id).count > 0 {
@@ -477,8 +520,31 @@ class Api {
         return image
     }
     
+    // скачивает новую картинку на фон
+    func downloadNewBG(height: String, width: String) {
+        //        let destination = DownloadRequest.suggestedDownloadDestination(for: .documentDirectory) // не перезаписывает файл
+        let newName = "newbg.jpeg"
+        let destination: DownloadRequest.DownloadFileDestination = { _, _ in
+            let documentsURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
+            let fileURL = documentsURL.appendingPathComponent(newName)
+            
+            return (fileURL, [.removePreviousFile, .createIntermediateDirectories])
+        }
+        let downloadLink = "https://unsplash.it/"+width+"/"+height+"/?random&gravity=west"
+        Alamofire.download(downloadLink, to: destination)
+            .downloadProgress { progress in
+                //                print("Download Progress: \(progress.fractionCompleted) --- \(Thread.current)")
+            }
+            .responseData(queue: concurrentQueue) { response in
+                if response.result.value != nil {
+                    print("Downloaded newBG \(String(describing: response.destinationURL?.path)) successfully")
+                }
+        }
+    }
 
 }
+
+
 
 
 // проверка запускалась ли программа раньше

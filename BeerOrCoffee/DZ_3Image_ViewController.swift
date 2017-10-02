@@ -6,6 +6,9 @@
 //  Copyright © 2017 OSX. All rights reserved.
 //
 
+//  Для проекта не нужен. Одна из домашек.
+
+
 import UIKit
 
 class DZ_3Image_ViewController: UIViewController {
@@ -93,8 +96,14 @@ class DZ_3Image_ViewController: UIViewController {
         
         super.viewDidLoad()
         
-        scrollView.contentSize = CGSize(width: self.view.frame.size.width, height: 750)
-
+        scrollView.contentSize = CGSize(width: self.view.frame.size.width, height: 1750)
+ 
+        let backgroundImage = UIImage(named: "bg.png")
+                let imageViewBG = UIImageView(frame: self.view.bounds)
+                imageViewBG.image = backgroundImage
+                imageViewBG.contentMode = .scaleAspectFill
+                self.view.addSubview(imageViewBG)
+                self.view.sendSubview(toBack: imageViewBG)
 
         // Do any additional setup after loading the view.
     }

@@ -9,6 +9,7 @@
 import UIKit
 import GoogleMaps
 import Firebase
+import UserNotifications
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -19,6 +20,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
         GMSServices.provideAPIKey(apikey)
         FirebaseApp.configure()
+        UIApplication.shared.setMinimumBackgroundFetchInterval(UIApplicationBackgroundFetchIntervalMinimum)
+        
+        
         // Override point for customization after application launch.
         return true
     }
@@ -43,6 +47,18 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func applicationWillTerminate(_ application: UIApplication) {
         // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
+    }
+    func application(_ application: UIApplication, didReceive notification: UILocalNotification) {
+        print("from local notif")
+        let storyboard = UIStoryboard(name: "Main", bundle: nil)
+        let tabController = storyboard.instantiateViewController(withIdentifier: "tabController") as! UITabBarController
+        tabController.selectedIndex = 0
+        let navController = tabController.selectedViewController as! UINavigationController
+        let main = navController.topViewController as! SearchViewController
+        main.performSegue(withIdentifier: "details", sender: nil)
+        self.window?.rootViewController = tabController
+        window?.makeKeyAndVisible()
+        
     }
     
     func application(_ application: UIApplication, performFetchWithCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void) {
@@ -71,6 +87,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         Api.sharedApi.clearPhotosDB()
         print(Api.sharedApi.findPlaces(type: searchType, lat: lat, lng: lng))
         
+        
         print("Update placesData complite")
         lastUpdate = Date()
         timer = nil
@@ -78,8 +95,21 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         return
         
     }
+    
 
+}
 
+@available(iOS 10.0, *)
+let message = UNMutableNotificationContent()
+@available(iOS 10.0, *)
+public func sendLocalNotification(name: String, raiting: String) {
+    message.title = "Ближайшее заведение:"
+    message.subtitle = name
+    message.body = "raiting: " + raiting
+    UIApplication.shared.applicationIconBadgeNumber = 1
+    let trigger = UNTimeIntervalNotificationTrigger(timeInterval: 5, repeats: false)
+    let request = UNNotificationRequest(identifier: "done", content: message, trigger: trigger)
+    UNUserNotificationCenter.current().add(request, withCompletionHandler: nil)
 }
 
 let apikey = "AIzaSyBzfEMMl1BGXGoLngcVuEdu2HvOGTMVT48"

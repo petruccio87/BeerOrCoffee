@@ -10,6 +10,7 @@ target 'BeerOrCoffee' do
   pod 'SwiftyJSON', '~> 3.1'
   pod 'GoogleMaps', '~> 2.3'
   pod "NVHTarGzip"
+  pod 'Agrume', :git => 'https://github.com/JanGorman/Agrume.git'
   pod 'Firebase/Core'
   pod 'Firebase/Database'
 end

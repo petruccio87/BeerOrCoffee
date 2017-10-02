@@ -42,6 +42,7 @@ class FavoritsData: Object {
 class PhotosData: Object {
     dynamic var place_id: String = ""
     dynamic var place_photo: String = ""
+    dynamic var favorit: Bool = true
     
     override static func primaryKey() -> String? {
         return "place_photo"

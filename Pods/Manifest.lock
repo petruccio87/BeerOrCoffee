@@ -1,4 +1,5 @@
 PODS:
+  - Agrume (3.2.3)
   - Alamofire (4.5.0)
   - Firebase/Core (4.0.3):
     - FirebaseAnalytics (= 4.0.2)
@@ -33,6 +34,7 @@ PODS:
   - SwiftyJSON (3.1.4)
 
 DEPENDENCIES:
+  - Agrume (from `https://github.com/JanGorman/Agrume.git`)
   - Alamofire (~> 4.5)
   - Firebase/Core
   - Firebase/Database
@@ -41,7 +43,17 @@ DEPENDENCIES:
   - RealmSwift (~> 2.8)
   - SwiftyJSON (~> 3.1)
 
+EXTERNAL SOURCES:
+  Agrume:
+    :git: https://github.com/JanGorman/Agrume.git
+
+CHECKOUT OPTIONS:
+  Agrume:
+    :commit: 59ccde303be81ac1ae8dee68a37d54937a630131
+    :git: https://github.com/JanGorman/Agrume.git
+
 SPEC CHECKSUMS:
+  Agrume: 05d8905f43710985307f209de243113876602e71
   Alamofire: f28cdffd29de33a7bfa022cbd63ae95a27fae140
   Firebase: 9e33fdfbca37cab635c693883caa90a4475b842b
   FirebaseAnalytics: ad41720e3e67fc63fbe3d2948d3e26932a8de311
@@ -55,6 +67,6 @@ SPEC CHECKSUMS:
   RealmSwift: 8183818515471b01a99abdd2970f8e4fd52b6f4a
   SwiftyJSON: c2842d878f95482ffceec5709abc3d05680c0220
 
-PODFILE CHECKSUM: 394d9a7f8763c4b0b96d550af95d574c601e5b62
+PODFILE CHECKSUM: 84e1811e18e06477fb6eafd590a6ad5e943eecdd
 
 COCOAPODS: 1.2.1

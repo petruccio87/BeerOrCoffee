@@ -30,12 +30,28 @@ class FavoritsViewController: UIViewController, UITableViewDataSource, UITableVi
         tableView.delegate = self
         tableView.dataSource = self
         
-        let backgroundImage = UIImage(named: "bg.png")
-        let imageViewBG = UIImageView(frame: self.view.bounds)
-        imageViewBG.image = backgroundImage
-        imageViewBG.contentMode = .scaleAspectFill
-        view.addSubview(imageViewBG)
-        view.sendSubview(toBack: imageViewBG)
+        let newName = "newbg.jpeg"
+        let documentsURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
+        let filePath = documentsURL.appendingPathComponent(newName).path
+        //        let filePath = url.appendingPathComponent("nameOfFileHere").path
+        let fileManager = FileManager.default
+        if fileManager.fileExists(atPath: filePath) {
+            print("NewBG AVAILABLE")
+            let backgroundImage = UIImage(named: filePath)
+            let imageViewBG = UIImageView(frame: self.view.bounds)
+            imageViewBG.image = backgroundImage
+            imageViewBG.contentMode = .scaleAspectFill
+            view.addSubview(imageViewBG)
+            view.sendSubview(toBack: imageViewBG)
+        } else {
+            print("NewBG NOT AVAILABLE")
+            let backgroundImage = UIImage(named: "bg.png")
+            let imageViewBG = UIImageView(frame: self.view.bounds)
+            imageViewBG.image = backgroundImage
+            imageViewBG.contentMode = .scaleAspectFill
+            view.addSubview(imageViewBG)
+            view.sendSubview(toBack: imageViewBG)
+        }
 //        let backgroundImage = UIImage(named: "bg.png")
 //        let imageView = UIImageView(image: backgroundImage)
 //        imageView.contentMode = .scaleAspectFill
@@ -58,6 +74,7 @@ class FavoritsViewController: UIViewController, UITableViewDataSource, UITableVi
         
         if load == nil {
 //     api.findPlaces()      //если еще не запускались, то и любимых мест нет
+            Api.sharedApi.getFavPlacesDataFromDB() // теперь есть любимые есть даже при первом запуске - из firebase
         } else {
 //            classPlace = api.loadClassFavPlacesListDB()
             Api.sharedApi.getFavPlacesDataFromDB()
@@ -129,8 +146,20 @@ class FavoritsViewController: UIViewController, UITableViewDataSource, UITableVi
         }
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        self.navigationController?.isNavigationBarHidden = true;
+        
+        if #available(iOS 10.0, *) {
+            //            message.badge = 0
+            UIApplication.shared.applicationIconBadgeNumber = 0
+        } else {
+            print("iOS version is to Low for LocalNotifications")
+        }
+    }
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
+        self.navigationController?.isNavigationBarHidden = false;
         Api.sharedApi.clearFavoritsDB()
     }
 
@@ -139,12 +168,13 @@ class FavoritsViewController: UIViewController, UITableViewDataSource, UITableVi
         // Dispose of any resources that can be recreated.
     }
     
-    func goBack() {
-        dismiss(animated: true, completion: nil)
-    }
+//    func goBack() {
+//        dismiss(animated: true, completion: nil)
+//    }
     
     deinit {
         notificationToken?.stop()
+        print("favorits View deinit")
     }
     
 }

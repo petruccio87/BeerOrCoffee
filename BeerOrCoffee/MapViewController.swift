@@ -11,16 +11,24 @@ import UIKit
 import RealmSwift
 import GoogleMaps
 
-class MapViewController: UIViewController {
+class MapViewController: UIViewController, GMSMapViewDelegate {
     
-    let api : Api = Api()
+//    let api : Api = Api()
     let realm = try! Realm()
     var notificationToken: NotificationToken? = nil
-    var classPlace : [Place] = []
+//    var classPlace : [Place] = []
+    var mapView: GMSMapView!
+    
+    struct markerData{
+        let from: String
+        let index: Int
+    }
+    var from = "fromDetails"    // дефолтные значения для перехода по нажатию на маркер
+    var index = 0
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+        mapView.delegate = self
         // Do any additional setup after loading the view.
     }
     
@@ -33,7 +41,7 @@ class MapViewController: UIViewController {
         // Create a GMSCameraPosition that tells the map to display the
         // coordinate -33.86,151.20 at zoom level 6.
         let camera = GMSCameraPosition.camera(withLatitude: lat, longitude: lng, zoom: 14.0)
-        let mapView = GMSMapView.map(withFrame: CGRect.zero, camera: camera)
+        mapView = GMSMapView.map(withFrame: CGRect.zero, camera: camera)
         mapView.isMyLocationEnabled = true
         mapView.settings.myLocationButton = true
         view = mapView
@@ -51,22 +59,26 @@ class MapViewController: UIViewController {
             
             Api.sharedApi.getPlacesDataFromDB()
             Api.sharedApi.getFavPlacesDataFromDB()
-            for place in Api.sharedApi.placesData {
+            for (index, place) in Api.sharedApi.placesData.enumerated() {
                 let marker = GMSMarker()
                 let latLng = place.latLng.components(separatedBy: ",")
                 marker.position = CLLocationCoordinate2D(latitude: Double(latLng[0])!, longitude: Double(latLng[1])!)
                 marker.title = place.place_name
                 marker.snippet = place.address
                 marker.map = mapView
+                let tmpData = markerData(from: "fromDetails", index: index)
+                marker.userData = tmpData
 //                print("added marker \(marker) -- \(latLng[0]) -- \(latLng[1])")
             }
-            for place in Api.sharedApi.favPlacesData {
+            for (index, place) in Api.sharedApi.favPlacesData.enumerated() {
                 let marker = GMSMarker()
                 let latLng = place.latLng.components(separatedBy: ",")
                 marker.position = CLLocationCoordinate2D(latitude: Double(latLng[0])!, longitude: Double(latLng[1])!)
                 marker.title = place.place_name
                 marker.snippet = place.address
                 marker.map = mapView
+                let tmpData = markerData(from: "fromFavorits", index: index)
+                marker.userData = tmpData
 //                print("added marker \(marker.title ?? "title") -- \(Thread.current)")
             }
 //            self.classPlace = self.api.loadClassPlacesListDB()
@@ -96,7 +108,24 @@ class MapViewController: UIViewController {
         
     }
     
+    func mapView(_ mapView: GMSMapView, didTapInfoWindowOf marker: GMSMarker) {
+        print("Marker Taped \((marker.userData as! markerData).index)")
+        from = (marker.userData as! markerData).from
+        index = (marker.userData as! markerData).index
+        goToDetails()
+        
+    }
     
+    func goToDetails() {
+        performSegue(withIdentifier: "goToDetails", sender: nil)
+    }
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        if segue.identifier == "goToDetails" {
+            let destinationVC = segue.destination as! DetailsViewController
+            destinationVC.index = self.index
+            destinationVC.from = self.from
+        }
+    }
     
     /*
      // MARK: - Navigation
@@ -107,9 +136,25 @@ class MapViewController: UIViewController {
      // Pass the selected object to the new view controller.
      }
      */
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        self.navigationController?.isNavigationBarHidden = true;
+        
+        if #available(iOS 10.0, *) {
+            UIApplication.shared.applicationIconBadgeNumber = 0
+        } else {
+            print("iOS version is to Low for LocalNotifications")
+        }
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        self.navigationController?.isNavigationBarHidden = false;
+    }
     
     deinit {
         notificationToken?.stop()
+         print("map View deinit")
     }
     
 }

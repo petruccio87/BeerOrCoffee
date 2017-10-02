@@ -21,13 +21,14 @@ class TableViewController: UIViewController, UITableViewDataSource, UITableViewD
     let realm = try! Realm()
     var notificationToken: NotificationToken? = nil     // нотификация realm
     var searchType = "Bar"  // меняется через seque
-    var lat: Double = 0
-    var lng: Double = 0
-    var classPlace : [Place] = []
+//    var lat: Double = 0
+//    var lng: Double = 0
+//    var classPlace : [Place] = []
     let myActivityIndicator = UIActivityIndicatorView(activityIndicatorStyle: UIActivityIndicatorViewStyle.whiteLarge)
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        self.tabBarItem = UITabBarItem(tabBarSystemItem: UITabBarSystemItem.featured, tag: 2)
         tableView.delegate = self
         tableView.dataSource = self
         // Do any additional setup after loading the view, typically from a nib.
@@ -35,24 +36,40 @@ class TableViewController: UIViewController, UITableViewDataSource, UITableViewD
 //        let imageView = UIImageView(image: backgroundImage)
 //        imageView.contentMode = .scaleAspectFill
 //        self.view.backgroundView = imageView
-        let backgroundImage = UIImage(named: "bg.png")
-        let imageViewBG = UIImageView(frame: self.view.bounds)
-        imageViewBG.image = backgroundImage
-        imageViewBG.contentMode = .scaleAspectFill
-        view.addSubview(imageViewBG)
-        view.sendSubview(toBack: imageViewBG)
+        let newName = "newbg.jpeg"
+        let documentsURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
+        let filePath = documentsURL.appendingPathComponent(newName).path
+        //        let filePath = url.appendingPathComponent("nameOfFileHere").path
+        let fileManager = FileManager.default
+        if fileManager.fileExists(atPath: filePath) {
+            print("NewBG AVAILABLE")
+            let backgroundImage = UIImage(named: filePath)
+            let imageViewBG = UIImageView(frame: self.view.bounds)
+            imageViewBG.image = backgroundImage
+            imageViewBG.contentMode = .scaleAspectFill
+            view.addSubview(imageViewBG)
+            view.sendSubview(toBack: imageViewBG)
+        } else {
+            print("NewBG NOT AVAILABLE")
+            let backgroundImage = UIImage(named: "bg.png")
+            let imageViewBG = UIImageView(frame: self.view.bounds)
+            imageViewBG.image = backgroundImage
+            imageViewBG.contentMode = .scaleAspectFill
+            view.addSubview(imageViewBG)
+            view.sendSubview(toBack: imageViewBG)
+        }
         
-        let headerView = UIView(frame: CGRect(x: 0, y: 0, width: view.frame.size.width, height: 44))
-        headerView.backgroundColor = UIColor.yellow
-        let headerTitleView = UILabel(frame: CGRect(x: headerView.center.x - 50, y: 20, width: 100, height: 20))
-        headerTitleView.text = "Results"
-        let headerBackView = UIButton(frame: CGRect(x: 5, y: 20, width: 20, height: 20))
-        headerBackView.tintColor = UIColor.blue
-        headerBackView.setTitle("<", for: .normal)
-        headerBackView.addTarget(self, action: #selector(TableViewController.goBack), for: .touchDown)
-        headerView.addSubview(headerBackView)
-        headerView.addSubview(headerTitleView)
-        self.view.addSubview(headerView)
+//        let headerView = UIView(frame: CGRect(x: 0, y: 0, width: view.frame.size.width, height: 44))
+//        headerView.backgroundColor = UIColor.yellow
+//        let headerTitleView = UILabel(frame: CGRect(x: headerView.center.x - 50, y: 20, width: 100, height: 20))
+//        headerTitleView.text = "Results"
+//        let headerBackView = UIButton(frame: CGRect(x: 5, y: 20, width: 20, height: 20))
+//        headerBackView.tintColor = UIColor.blue
+//        headerBackView.setTitle("<", for: .normal)
+//        headerBackView.addTarget(self, action: #selector(TableViewController.goBack), for: .touchDown)
+//        headerView.addSubview(headerBackView)
+//        headerView.addSubview(headerTitleView)
+//        self.view.addSubview(headerView)
         
         
         
@@ -66,9 +83,18 @@ class TableViewController: UIViewController, UITableViewDataSource, UITableViewD
  // ищем каждый раз
         
 //        print("1. start find places \(Thread.current)")
-        Api.sharedApi.clearResultsDB()
-        Api.sharedApi.clearPhotosDB()
-        print(Api.sharedApi.findPlaces(type: self.searchType, lat: self.lat, lng: self.lng))
+        
+        if lat != 0 && lng != 0 {       // если нет координат, то и искать нечего
+            Api.sharedApi.clearResultsDB()
+            Api.sharedApi.clearPhotosDB()
+            print(Api.sharedApi.findPlaces(type: self.searchType, lat: lat, lng: lng))
+        } else {
+            let alert = UIAlertController(title: "Alert", message: "No GPS data.", preferredStyle: .alert)
+            let actionOK = UIAlertAction(title: "Ok", style: .default, handler: nil)
+            alert.addAction(actionOK)
+            self.present(alert, animated: true, completion: nil)
+        }
+        
         
 //        NotificationCenter.default.addObserver(self, selector: #selector(refreshTableView), name: NSNotification.Name(rawValue: "writePlaceToDB"), object: nil)
 //        
@@ -89,10 +115,10 @@ class TableViewController: UIViewController, UITableViewDataSource, UITableViewD
     func refreshTableView() {
 //        self.classPlace = self.api.loadClassPlacesListDB()
 
-        DispatchQueue.main.async {
+        DispatchQueue.main.async {[weak self] in
             print("refresh   \(Thread.current)")
 //            Api.sharedApi.getPlacesDataFromDB()
-            self.tableView.reloadData()
+            self?.tableView.reloadData()
         }
     }
     
@@ -141,12 +167,13 @@ class TableViewController: UIViewController, UITableViewDataSource, UITableViewD
         // Dispose of any resources that can be recreated.
     }
     
-    func goBack() {
-        dismiss(animated: true, completion: nil)
-    }
+//    func goBack() {
+//        dismiss(animated: true, completion: nil)
+//    }
 
     deinit {
         notificationToken?.stop()       //  включить когда используется реальмовская нотификация
+        print("details View deinit")
 //        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: "writePlaceToDB"), object: nil)
     }
     
@@ -156,6 +183,12 @@ class TableViewController: UIViewController, UITableViewDataSource, UITableViewD
         //        Api.sharedApi.clearResultsDB()
         //        self.navigationController?.isNavigationBarHidden = true;
         self.tabBarController?.tabBar.isHidden = false
+        if #available(iOS 10.0, *) {
+//            message.badge = 0
+            UIApplication.shared.applicationIconBadgeNumber = 0
+        } else {
+            print("iOS version is to Low for LocalNotifications")
+        }
     }
 }
 

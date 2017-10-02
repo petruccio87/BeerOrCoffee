@@ -10,18 +10,19 @@
 import UIKit
 import RealmSwift
 import GoogleMaps
+import Agrume
 
-class DetailsViewController: UIViewController, UICollectionViewDataSource, UICollectionViewDelegate {
+class DetailsViewController: UIViewController, UICollectionViewDataSource, UICollectionViewDelegate, UIScrollViewDelegate {
     
     @IBOutlet weak var mapView: GMSMapView!
     @IBOutlet weak var collectionView: UICollectionView!
-    
-
 
     @IBOutlet weak var scrollView: UIScrollView!
-
-
     
+    @IBOutlet weak var imageViewBG: UIImageView!
+
+
+
     
     var notificationToken: NotificationToken? = nil
     let realm = try! Realm()
@@ -40,19 +41,55 @@ class DetailsViewController: UIViewController, UICollectionViewDataSource, UICol
         super.viewDidLoad()
         collectionView.delegate = self
         collectionView.dataSource = self
-        scrollView.contentSize = CGSize(width: self.view.frame.size.width, height: 1800)
+        scrollView.delegate = self
+        scrollView.contentSize = CGSize(width: self.view.frame.size.width, height: 800)
+        Api.sharedApi.getPlacesDataFromDB()
         
-        let headerView = UIView(frame: CGRect(x: 0, y: 0, width: view.frame.size.width, height: 44))
-        headerView.backgroundColor = UIColor.yellow
-        let headerTitleView = UILabel(frame: CGRect(x: headerView.center.x - 50, y: 20, width: 100, height: 20))
-        headerTitleView.text = "Details"
-        let headerBackView = UIButton(frame: CGRect(x: 5, y: 20, width: 20, height: 20))
-        headerBackView.tintColor = UIColor.blue
-        headerBackView.setTitle("<", for: .normal)
-        headerBackView.addTarget(self, action: #selector(TableViewController.goBack), for: .touchDown)
-        headerView.addSubview(headerBackView)
-        headerView.addSubview(headerTitleView)
-        self.view.addSubview(headerView)
+        
+        let newName = "newbg.jpeg"
+        let documentsURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
+        let filePath = documentsURL.appendingPathComponent(newName).path
+        //        let filePath = url.appendingPathComponent("nameOfFileHere").path
+        let fileManager = FileManager.default
+        if fileManager.fileExists(atPath: filePath) {
+            print("NewBG AVAILABLE")
+            let backgroundImage = UIImage(named: filePath)
+            imageViewBG.image = backgroundImage
+            imageViewBG.contentMode = .scaleAspectFill
+//            view.addSubview(imageViewBG)
+//            view.sendSubview(toBack: imageViewBG)
+        } else {
+            print("NewBG NOT AVAILABLE")
+            let backgroundImage = UIImage(named: "bg.png")
+//            let imageViewBG = UIImageView(frame: self.view.bounds)
+            imageViewBG.image = backgroundImage
+            imageViewBG.contentMode = .scaleAspectFill
+//            view.addSubview(imageViewBG)
+//            view.sendSubview(toBack: imageViewBG)
+        }
+        
+//        self.navigationItem.hidesBackButton = true
+//        let newBackButton = UIBarButtonItem(title: "< Back", style: UIBarButtonItemStyle.plain, target: self, action: #selector(DetailsViewController.goBack))
+//        self.navigationItem.leftBarButtonItem = newBackButton
+        
+//        let backgroundImage = UIImage(named: "bg.png")
+//        let imageViewBG = UIImageView(frame: self.view.bounds)
+//        imageViewBG.image = backgroundImage
+//        imageViewBG.contentMode = .scaleAspectFill
+//        self.view.addSubview(imageViewBG)
+//        self.view.sendSubview(toBack: imageViewBG)
+        
+//        let headerView = UIView(frame: CGRect(x: 0, y: 0, width: view.frame.size.width, height: 44))
+//        headerView.backgroundColor = UIColor.yellow
+//        let headerTitleView = UILabel(frame: CGRect(x: headerView.center.x - 50, y: 20, width: 100, height: 20))
+//        headerTitleView.text = "Details"
+//        let headerBackView = UIButton(frame: CGRect(x: 5, y: 20, width: 20, height: 20))
+//        headerBackView.tintColor = UIColor.blue
+//        headerBackView.setTitle("<", for: .normal)
+//        headerBackView.addTarget(self, action: #selector(TableViewController.goBack), for: .touchDown)
+//        headerView.addSubview(headerBackView)
+//        headerView.addSubview(headerTitleView)
+//        self.view.addSubview(headerView)
         
         
         
@@ -66,9 +103,10 @@ class DetailsViewController: UIViewController, UICollectionViewDataSource, UICol
         let favButton : UIButton = self.view.viewWithTag(6) as! UIButton
         // Do any additional setup after loading the view.
         
-        notificationToken = realm.addNotificationBlock {notification, realm in
-            Api.sharedApi.getPhotoDataFromDB(place_id: self.place_id)
-            self.collectionView.reloadData()
+        notificationToken = realm.addNotificationBlock {[weak self] notification, realm in
+            Api.sharedApi.getPhotoDataFromDB(place_id: (self?.place_id)!)
+            Api.sharedApi.getPlacesDataFromDB()
+            self?.collectionView.reloadData()
         }
         
         
@@ -78,6 +116,7 @@ class DetailsViewController: UIViewController, UICollectionViewDataSource, UICol
             priceLevelLabel.text = Api.sharedApi.placesData[index].price_level
             latLngLabel.text = Api.sharedApi.placesData[index].latLng
             addressLabel.text = Api.sharedApi.placesData[index].address
+//            addressLabel.text = "Россия, г.Москва, ул.вторая Тверская-ямская, дом 13, корпус 18" 
             markerLatLng = Api.sharedApi.placesData[index].latLng.components(separatedBy: ",")
             markerTitle = Api.sharedApi.placesData[index].place_name
             markerSnippet = Api.sharedApi.placesData[index].address
@@ -96,29 +135,33 @@ class DetailsViewController: UIViewController, UICollectionViewDataSource, UICol
         
 //        Api.sharedApi.findPlaceInfo(place_id: place_id)
         concurrentQueue.async {
-            if Api.sharedApi.photoData.count == 0 {
-                Api.sharedApi.findPlaceInfo(place_id: self.place_id)
+//            if Api.sharedApi.photoData.count == 0 {
+////                if self.from == "fromFavorits" {
+////                    Api.sharedApi.findPlaceInfo(place_id: self.place_id, favorit: true)
+////                } else {
+////                    Api.sharedApi.findPlaceInfo(place_id: self.place_id, favorit: false)
+////                }
+//                Api.sharedApi.getPhotoDataFromDB(place_id: self.place_id)
+//                for index in Api.sharedApi.photoData {
+//                    concurrentQueue.sync {[weak self] in
+//                        let image = Api.sharedApi.loadPhoto(url: index.place_photo)
+//                        self?.photos.append(image)
+//                        DispatchQueue.main.async {
+//                            self?.collectionView.reloadData()
+//                        }
+//                    }
+//                }
+//            } else {
                 Api.sharedApi.getPhotoDataFromDB(place_id: self.place_id)
                 for index in Api.sharedApi.photoData {
-                    concurrentQueue.sync {
+                    concurrentQueue.sync {[weak self] in
                         let image = Api.sharedApi.loadPhoto(url: index.place_photo)
-                        self.photos.append(image)
+                        self?.photos.append(image)
                         DispatchQueue.main.async {
-                            self.collectionView.reloadData()
+                            self?.collectionView.reloadData()
                         }
                     }
-                }
-            } else {
-                Api.sharedApi.getPhotoDataFromDB(place_id: self.place_id)
-                for index in Api.sharedApi.photoData {
-                    concurrentQueue.sync {
-                        let image = Api.sharedApi.loadPhoto(url: index.place_photo)
-                        self.photos.append(image)
-                        DispatchQueue.main.async {
-                            self.collectionView.reloadData()
-                        }
-                    }
-                }
+//                }
             }
         }
         
@@ -143,7 +186,7 @@ class DetailsViewController: UIViewController, UICollectionViewDataSource, UICol
 //        let documentsURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
 //        let iconURL = documentsURL.appendingPathComponent(iconName.last!)
 //        marker.icon = UIImage(named: iconURL.path)
-
+        
         
     }
     
@@ -175,15 +218,22 @@ class DetailsViewController: UIViewController, UICollectionViewDataSource, UICol
         imageView.image = image
 //        imageView.image = UIImage(named: ManagerData.sharedManager.weatherData[index].tempList[indexPath.row].icon)
 //        imageView.image = UIImage(named: "star_false")
-        
-
 
         return cell
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        let agrume = Agrume(images: photos, startIndex: indexPath.row, backgroundBlurStyle: .light)
+        agrume.didScroll = { [unowned self] index in
+            self.collectionView?.scrollToItem(at: IndexPath(row: index, section: 0), at: [], animated: false)
+        }
+        agrume.showFrom(self)
     }
 // -----------------------------------------
 
 // кнопка favorit- добавляет в базу любимых, если заведения там нет, и удаляет из базы любимых, если оно там есть.
     @IBAction func favorit(_ sender: UIButton) {
+        var alertmessg = ""
         Api.sharedApi.makeFavorit(place_id: place_id)
         if from == "fromDetails" {
             viewDidLoad()
@@ -193,10 +243,16 @@ class DetailsViewController: UIViewController, UICollectionViewDataSource, UICol
                 //        if Api.sharedApi.placesData[index].favorit {
                 let favImage = UIImage(named: "star_true.png")
                 favButton.setImage(favImage, for: .normal)
+                alertmessg = "Добавлено в любимые"
             } else {
                 let favImage = UIImage(named: "star_false.png")
                 favButton.setImage(favImage, for: .normal)
+                alertmessg = "Удалено из любимых"
             }
+            let alert = UIAlertController(title: "Alert", message: alertmessg, preferredStyle: .alert)
+            let actionOK = UIAlertAction(title: "Ok", style: .default, handler: nil)
+            alert.addAction(actionOK)
+            self.present(alert, animated: true, completion: nil)
         }
 //        let realm = try! Realm()
 //        
@@ -225,18 +281,25 @@ class DetailsViewController: UIViewController, UICollectionViewDataSource, UICol
 //    }
         
         
-        let alert = UIAlertController(title: "Alert", message: "test Alert", preferredStyle: .alert)
-        let actionOK = UIAlertAction(title: "Ok", style: .default, handler: nil)
-        alert.addAction(actionOK)
-        self.present(alert, animated: true, completion: nil)
+        
     }
     
-    func goBack() {
-        dismiss(animated: true, completion: nil)
+    
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        if #available(iOS 10.0, *) {
+            UIApplication.shared.applicationIconBadgeNumber = 0
+        } else {
+            print("iOS version is to Low for LocalNotifications")
+        }
     }
+    
     
     deinit {
         notificationToken?.stop()
+        print("details View deinit")
     }
 
     
